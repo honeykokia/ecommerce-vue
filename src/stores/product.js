@@ -1,6 +1,7 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 import { productApi, categoryApi } from '../services/api.js'
+import { mockProducts, mockCategories } from '../services/mockData.js'
 
 export const useProductStore = defineStore('product', () => {
   // State
@@ -10,6 +11,7 @@ export const useProductStore = defineStore('product', () => {
   const searchQuery = ref('')
   const isLoading = ref(false)
   const error = ref(null)
+  const useMockData = ref(false) // Flag to use mock data when API fails
 
   // Getters
   const filteredProducts = computed(() => {
@@ -50,9 +52,14 @@ export const useProductStore = defineStore('product', () => {
     try {
       const response = await productApi.getProducts(params)
       products.value = response.data.products || []
+      useMockData.value = false
     } catch (err) {
       error.value = err.message || 'Failed to fetch products'
-      console.error('Error fetching products:', err)
+      console.warn('API unavailable, using mock data for demo:', err)
+      
+      // Use mock data when API fails
+      products.value = mockProducts
+      useMockData.value = true
     } finally {
       isLoading.value = false
     }
@@ -62,8 +69,12 @@ export const useProductStore = defineStore('product', () => {
     try {
       const response = await categoryApi.getCategories()
       categories.value = response.data.categories || []
+      useMockData.value = false
     } catch (err) {
-      console.error('Error fetching categories:', err)
+      console.warn('API unavailable, using mock categories:', err)
+      // Use mock data when API fails
+      categories.value = mockCategories
+      useMockData.value = true
     }
   }
 
@@ -76,8 +87,11 @@ export const useProductStore = defineStore('product', () => {
       return response.data.product
     } catch (err) {
       error.value = err.message || 'Failed to fetch product'
-      console.error('Error fetching product:', err)
-      return null
+      console.warn('API unavailable, using mock data:', err)
+      
+      // Return mock product when API fails
+      const mockProduct = mockProducts.find(p => p.id === id)
+      return mockProduct || null
     } finally {
       isLoading.value = false
     }
@@ -108,6 +122,7 @@ export const useProductStore = defineStore('product', () => {
     searchQuery,
     isLoading,
     error,
+    useMockData,
     // Getters
     filteredProducts,
     getProductById,

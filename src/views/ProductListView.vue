@@ -77,6 +77,19 @@ const clearFilters = () => {
     <div class="mb-6">
       <h1 class="text-3xl font-bold text-gray-900 mb-2">商品列表</h1>
       <p class="text-gray-600">探索我們精選的商品</p>
+      
+      <!-- Demo Notice -->
+      <div 
+        v-if="productStore.useMockData" 
+        class="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg"
+      >
+        <div class="flex items-center text-blue-800">
+          <i class="fas fa-info-circle mr-2"></i>
+          <span class="text-sm">
+            <strong>示範模式：</strong>目前顯示模擬資料。連接後端API服務即可載入真實商品資料。
+          </span>
+        </div>
+      </div>
     </div>
 
     <!-- Filters and Search -->
@@ -206,7 +219,7 @@ const clearFilters = () => {
     </div>
 
     <!-- Error State -->
-    <div v-else-if="productStore.error" class="text-center py-12">
+    <div v-else-if="productStore.error && !productStore.useMockData" class="text-center py-12">
       <i class="fas fa-exclamation-triangle text-3xl text-red-600 mb-4"></i>
       <p class="text-red-600 mb-4">{{ productStore.error }}</p>
       <button
