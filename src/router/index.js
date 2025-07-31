@@ -64,6 +64,11 @@ const router = createRouter({
       component: () => import('../views/CartView.vue'),
       beforeEnter: requireAuth
     },
+    {
+      path: '/demo',
+      name: 'demo',
+      component: () => import('../views/DemoView.vue'),
+    },
     // Redirect old routes for compatibility
     {
       path: '/user/profile',
