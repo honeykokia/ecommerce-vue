@@ -1,0 +1,3 @@
+[submodule "ecommerce-docs"]
+	path = ecommerce-docs
+	url = https://github.com/honeykokia/ecommerce-docs
