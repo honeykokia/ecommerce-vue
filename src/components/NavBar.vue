@@ -1,9 +1,19 @@
 <script setup>
+import { onMounted } from 'vue'
 import { useUserStore } from '../stores/user.js'
+import { useCartStore } from '../stores/cart.js'
 import { useRouter } from 'vue-router'
 
 const userStore = useUserStore()
+const cartStore = useCartStore()
 const router = useRouter()
+
+onMounted(() => {
+  // Load cart data if user is authenticated
+  if (userStore.isAuthenticated) {
+    cartStore.fetchCart()
+  }
+})
 
 function handleLogout() {
   userStore.logout()
@@ -27,20 +37,27 @@ function handleLogout() {
         </RouterLink>
       </li>
       <li>
-        <a
-          href="#search"
+        <RouterLink
+          to="/products"
           class="text-black-500 hover:text-blue-700 border-b-2 border-transparent hover:border-blue-700 transition duration-200"
         >
           <i class="fa-solid fa-magnifying-glass text-2xl"></i>
-        </a>
+        </RouterLink>
       </li>
       <li>
-        <a
-          href="#cart"
-          class="text-black-500 hover:text-blue-700 border-b-2 border-transparent hover:border-blue-700 transition duration-200"
+        <RouterLink
+          to="/cart"
+          class="text-black-500 hover:text-blue-700 border-b-2 border-transparent hover:border-blue-700 transition duration-200 relative"
         >
           <i class="fa-solid fa-cart-shopping text-2xl"></i>
-        </a>
+          <!-- Cart badge -->
+          <span 
+            v-if="userStore.isAuthenticated && cartStore.cartCount > 0"
+            class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium"
+          >
+            {{ cartStore.cartCount > 99 ? '99+' : cartStore.cartCount }}
+          </span>
+        </RouterLink>
       </li>
       
       <!-- Authenticated user menu -->
@@ -71,10 +88,30 @@ function handleLogout() {
               My Profile
             </RouterLink>
             <RouterLink
+              to="/products"
+              class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition duration-200"
+            >
+              <i class="fas fa-shopping-bag mr-3 text-blue-600"></i>
+              Browse Products
+            </RouterLink>
+            <RouterLink
+              to="/cart"
+              class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition duration-200"
+            >
+              <i class="fas fa-shopping-cart mr-3 text-orange-600"></i>
+              My Cart
+              <span 
+                v-if="cartStore.cartCount > 0"
+                class="ml-auto bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center"
+              >
+                {{ cartStore.cartCount }}
+              </span>
+            </RouterLink>
+            <RouterLink
               to="/orders"
               class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition duration-200"
             >
-              <i class="fas fa-shopping-bag mr-3 text-purple-600"></i>
+              <i class="fas fa-receipt mr-3 text-purple-600"></i>
               My Orders
             </RouterLink>
             <div class="border-t border-gray-200 my-2"></div>
