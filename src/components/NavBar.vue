@@ -1,9 +1,19 @@
 <script setup>
+import { onMounted } from 'vue'
 import { useUserStore } from '../stores/user.js'
+import { useCartStore } from '../stores/cart.js'
 import { useRouter } from 'vue-router'
 
 const userStore = useUserStore()
+const cartStore = useCartStore()
 const router = useRouter()
+
+// Initialize cart on mount if user is authenticated
+onMounted(() => {
+  if (userStore.isAuthenticated) {
+    cartStore.fetchCart()
+  }
+})
 
 function handleLogout() {
   userStore.logout()
@@ -27,20 +37,29 @@ function handleLogout() {
         </RouterLink>
       </li>
       <li>
-        <a
-          href="#search"
+        <RouterLink
+          to="/products"
           class="text-black-500 hover:text-blue-700 border-b-2 border-transparent hover:border-blue-700 transition duration-200"
+          title="瀏覽商品"
         >
-          <i class="fa-solid fa-magnifying-glass text-2xl"></i>
-        </a>
+          <i class="fa-solid fa-search text-2xl"></i>
+        </RouterLink>
       </li>
-      <li>
-        <a
-          href="#cart"
+      <li class="relative">
+        <RouterLink
+          to="/cart"
           class="text-black-500 hover:text-blue-700 border-b-2 border-transparent hover:border-blue-700 transition duration-200"
+          title="購物車"
         >
           <i class="fa-solid fa-cart-shopping text-2xl"></i>
-        </a>
+          <!-- Cart count badge -->
+          <span 
+            v-if="userStore.isAuthenticated && cartStore.cartCount > 0"
+            class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium"
+          >
+            {{ cartStore.cartCount > 99 ? '99+' : cartStore.cartCount }}
+          </span>
+        </RouterLink>
       </li>
       
       <!-- Authenticated user menu -->
@@ -76,6 +95,16 @@ function handleLogout() {
             >
               <i class="fas fa-shopping-bag mr-3 text-purple-600"></i>
               My Orders
+            </RouterLink>
+            <RouterLink
+              to="/cart"
+              class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition duration-200"
+            >
+              <i class="fas fa-shopping-cart mr-3 text-orange-600"></i>
+              購物車
+              <span v-if="cartStore.cartCount > 0" class="ml-auto bg-red-500 text-white text-xs rounded-full px-2 py-1">
+                {{ cartStore.cartCount }}
+              </span>
             </RouterLink>
             <div class="border-t border-gray-200 my-2"></div>
             <button

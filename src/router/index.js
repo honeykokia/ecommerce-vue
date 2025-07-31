@@ -48,6 +48,22 @@ const router = createRouter({
       component: () => import('../views/OrdersView.vue'),
       beforeEnter: requireAuth
     },
+    {
+      path: '/products',
+      name: 'products',
+      component: () => import('../views/ProductsView.vue'),
+    },
+    {
+      path: '/products/:id',
+      name: 'product-detail',
+      component: () => import('../views/ProductDetailView.vue'),
+    },
+    {
+      path: '/cart',
+      name: 'cart',
+      component: () => import('../views/CartView.vue'),
+      beforeEnter: requireAuth
+    },
     // Redirect old routes for compatibility
     {
       path: '/user/profile',
