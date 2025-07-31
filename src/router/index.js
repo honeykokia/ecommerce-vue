@@ -12,6 +12,18 @@ function requireAuth(to, from, next) {
   }
 }
 
+// Route guard to check admin access (simplified - in real app would check user role)
+function requireAdmin(to, from, next) {
+  const userStore = useUserStore()
+  if (userStore.isAuthenticated) {
+    // In a real app, you would check if user has admin role
+    // For demo purposes, we'll allow any authenticated user
+    next()
+  } else {
+    next('/login')
+  }
+}
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -47,6 +59,24 @@ const router = createRouter({
       name: 'orders',
       component: () => import('../views/OrdersView.vue'),
       beforeEnter: requireAuth
+    },
+    {
+      path: '/cart',
+      name: 'cart',
+      component: () => import('../views/CartView.vue'),
+      beforeEnter: requireAuth
+    },
+    {
+      path: '/checkout',
+      name: 'checkout',
+      component: () => import('../views/CheckoutView.vue'),
+      beforeEnter: requireAuth
+    },
+    {
+      path: '/admin/users',
+      name: 'admin-users',
+      component: () => import('../views/AdminUsersView.vue'),
+      beforeEnter: requireAdmin
     },
     // Redirect old routes for compatibility
     {

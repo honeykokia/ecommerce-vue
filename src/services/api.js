@@ -165,3 +165,62 @@ export const promotionApi = {
     return apiRequest('/promotions')
   }
 }
+
+// Admin APIs
+export const adminApi = {
+  // Get all users
+  async getUsers() {
+    return apiRequest('/admin/users')
+  },
+
+  // Update user status
+  async updateUserStatus(userId, statusData) {
+    return apiRequest(`/admin/users/${userId}/status`, {
+      method: 'PATCH',
+      body: JSON.stringify(statusData)
+    })
+  },
+
+  // Get all orders
+  async getOrders() {
+    return apiRequest('/admin/orders')
+  },
+
+  // Update order status
+  async updateOrderStatus(orderId, orderData) {
+    return apiRequest(`/admin/orders/${orderId}`, {
+      method: 'PATCH',
+      body: JSON.stringify(orderData)
+    })
+  },
+
+  // Delete order
+  async deleteOrder(orderId) {
+    return apiRequest(`/admin/orders/${orderId}`, {
+      method: 'DELETE'
+    })
+  },
+
+  // Create product
+  async createProduct(productData) {
+    return apiRequest('/admin/products', {
+      method: 'POST',
+      body: JSON.stringify(productData)
+    })
+  },
+
+  // Update product
+  async updateProduct(productId, productData) {
+    return apiRequest(`/admin/products/${productId}`, {
+      method: 'PUT',
+      body: JSON.stringify(productData)
+    })
+  },
+
+  // Delete product
+  async deleteProduct(productId) {
+    return apiRequest(`/admin/products/${productId}`, {
+      method: 'DELETE'
+    })
+  }
+}

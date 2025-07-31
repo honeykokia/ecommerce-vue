@@ -1,6 +1,7 @@
 <script setup>
 import Advertisement from './Advertisement.vue';
 import FeatureList from './FeatureList.vue';
+import ProductShowcase from './ProductShowcase.vue';
 
 </script>
 
@@ -12,6 +13,10 @@ import FeatureList from './FeatureList.vue';
   <section class="featureList">
     <FeatureList />
   </section>
+
+  <section class="products">
+    <ProductShowcase />
+  </section>
 </template>
 
 <style scoped>
@@ -21,6 +26,10 @@ import FeatureList from './FeatureList.vue';
 
 .featureList{
   @apply w-full mx-auto p-6 bg-gray-200;
+}
+
+.products {
+  @apply w-full bg-gray-50;
 }
 
 </style>

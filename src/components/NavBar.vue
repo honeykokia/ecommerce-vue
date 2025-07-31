@@ -1,12 +1,23 @@
 <script setup>
 import { useUserStore } from '../stores/user.js'
+import { useCartStore } from '../stores/cart.js'
 import { useRouter } from 'vue-router'
+import { onMounted } from 'vue'
 
 const userStore = useUserStore()
+const cartStore = useCartStore()
 const router = useRouter()
+
+// Initialize cart when user is authenticated
+onMounted(() => {
+  if (userStore.isAuthenticated) {
+    cartStore.fetchCart()
+  }
+})
 
 function handleLogout() {
   userStore.logout()
+  cartStore.setCartItems([]) // Clear cart on logout
   router.push('/')
 }
 </script>
@@ -34,13 +45,21 @@ function handleLogout() {
           <i class="fa-solid fa-magnifying-glass text-2xl"></i>
         </a>
       </li>
+      
+      <!-- Cart with item count -->
       <li>
-        <a
-          href="#cart"
-          class="text-black-500 hover:text-blue-700 border-b-2 border-transparent hover:border-blue-700 transition duration-200"
+        <RouterLink
+          to="/cart"
+          class="relative text-black-500 hover:text-blue-700 border-b-2 border-transparent hover:border-blue-700 transition duration-200"
         >
           <i class="fa-solid fa-cart-shopping text-2xl"></i>
-        </a>
+          <span
+            v-if="userStore.isAuthenticated && cartStore.itemCount > 0"
+            class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-semibold"
+          >
+            {{ cartStore.itemCount > 99 ? '99+' : cartStore.itemCount }}
+          </span>
+        </RouterLink>
       </li>
       
       <!-- Authenticated user menu -->
@@ -76,6 +95,25 @@ function handleLogout() {
             >
               <i class="fas fa-shopping-bag mr-3 text-purple-600"></i>
               My Orders
+            </RouterLink>
+            <RouterLink
+              to="/cart"
+              class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition duration-200"
+            >
+              <i class="fas fa-shopping-cart mr-3 text-orange-600"></i>
+              Shopping Cart
+              <span v-if="cartStore.itemCount > 0" class="ml-auto bg-red-500 text-white text-xs rounded-full px-2 py-1">
+                {{ cartStore.itemCount }}
+              </span>
+            </RouterLink>
+            <div class="border-t border-gray-200 my-2"></div>
+            <!-- Admin section for authenticated users -->
+            <RouterLink
+              to="/admin/users"
+              class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition duration-200"
+            >
+              <i class="fas fa-users-cog mr-3 text-indigo-600"></i>
+              User Management
             </RouterLink>
             <div class="border-t border-gray-200 my-2"></div>
             <button
