@@ -9,7 +9,7 @@ export const useUserStore = defineStore('user', () => {
   const error = ref(null)
 
   // Getters
-  const isAuthenticated = computed(() => !!token.value && !!user.value)
+  const isAuthenticated = computed(() => !!token.value) //&& !!user.value)
   const userName = computed(() => user.value?.name || '')
   const userEmail = computed(() => user.value?.email || '')
 
@@ -20,11 +20,7 @@ export const useUserStore = defineStore('user', () => {
 
   function setToken(newToken) {
     token.value = newToken
-    if (newToken) {
-      localStorage.setItem('token', newToken)
-    } else {
-      localStorage.removeItem('token')
-    }
+    localStorage.setItem('token', newToken)
   }
 
   function setLoading(loading) {
