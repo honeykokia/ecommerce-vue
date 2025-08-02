@@ -11,7 +11,7 @@ const userStore = useUserStore()
 const formData = reactive({
   email: '',
   password: '',
-  confirmPassword: ''
+  confirmPassword: '',
 })
 
 // Form validation and state
@@ -21,27 +21,28 @@ const isSubmitting = ref(false)
 // Validate form
 function validateForm() {
   const newErrors = {}
-  
+
   if (!formData.email) {
     newErrors.email = 'Email is required'
   } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
     newErrors.email = 'Please enter a valid email address'
   }
-  
+
   if (!formData.password) {
     newErrors.password = 'Password is required'
   } else if (formData.password.length < 6) {
     newErrors.password = 'Password must be at least 6 characters long'
   } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(formData.password)) {
-    newErrors.password = 'Password must contain at least one uppercase letter, one lowercase letter, and one number'
+    newErrors.password =
+      'Password must contain at least one uppercase letter, one lowercase letter, and one number'
   }
-  
+
   if (!formData.confirmPassword) {
     newErrors.confirmPassword = 'Please confirm your password'
   } else if (formData.password !== formData.confirmPassword) {
     newErrors.confirmPassword = 'Passwords do not match'
   }
-  
+
   errors.value = newErrors
   return Object.keys(newErrors).length === 0
 }
@@ -59,7 +60,7 @@ async function handleSubmit() {
     const response = await userApi.register({
       email: formData.email,
       password: formData.password,
-      confirmPassword: formData.confirmPassword
+      confirmPassword: formData.confirmPassword,
     })
 
     // Handle successful registration
@@ -68,7 +69,7 @@ async function handleSubmit() {
       if (response.data.user.token) {
         userStore.setToken(response.data.user.token)
       }
-      
+
       // Redirect to login or profile
       router.push('/login')
     }
@@ -93,14 +94,14 @@ function checkPasswordStrength(password) {
     passwordStrength.value = ''
     return
   }
-  
+
   let strength = 0
   if (password.length >= 8) strength++
   if (/[a-z]/.test(password)) strength++
   if (/[A-Z]/.test(password)) strength++
   if (/\d/.test(password)) strength++
   if (/[^a-zA-Z\d]/.test(password)) strength++
-  
+
   if (strength <= 2) passwordStrength.value = 'weak'
   else if (strength <= 3) passwordStrength.value = 'medium'
   else passwordStrength.value = 'strong'
@@ -114,17 +115,16 @@ function checkPasswordStrength(password) {
         <div class="mx-auto h-12 w-12 flex items-center justify-center rounded-full bg-green-100">
           <i class="fas fa-user-plus text-green-600 text-xl"></i>
         </div>
-        <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
-          Create Account
-        </h2>
-        <p class="mt-2 text-center text-sm text-gray-600">
-          Join us and start shopping
-        </p>
+        <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">Create Account</h2>
+        <p class="mt-2 text-center text-sm text-gray-600">Join us and start shopping</p>
       </div>
-      
+
       <form @submit.prevent="handleSubmit" class="mt-8 space-y-6">
         <!-- Display general error -->
-        <div v-if="userStore.error" class="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md text-sm">
+        <div
+          v-if="userStore.error"
+          class="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md text-sm"
+        >
           <div class="flex">
             <i class="fas fa-exclamation-circle mt-0.5 mr-2"></i>
             <span>{{ userStore.error }}</span>
@@ -150,7 +150,7 @@ function checkPasswordStrength(password) {
                 required
                 :class="[
                   'appearance-none relative block w-full pl-10 px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 focus:z-10 sm:text-sm transition duration-200',
-                  errors.email ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : ''
+                  errors.email ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : '',
                 ]"
                 placeholder="Enter your email"
               />
@@ -170,13 +170,16 @@ function checkPasswordStrength(password) {
               <input
                 id="password"
                 v-model="formData.password"
-                @input="clearFieldError('password'); checkPasswordStrength(formData.password)"
+                @input="
+                  clearFieldError('password')
+                  checkPasswordStrength(formData.password)
+                "
                 type="password"
                 autocomplete="new-password"
                 required
                 :class="[
                   'appearance-none relative block w-full pl-10 px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 focus:z-10 sm:text-sm transition duration-200',
-                  errors.password ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : ''
+                  errors.password ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : '',
                 ]"
                 placeholder="Create a password"
               />
@@ -185,21 +188,25 @@ function checkPasswordStrength(password) {
             <div v-if="formData.password && passwordStrength" class="mt-1">
               <div class="flex items-center space-x-2">
                 <div class="flex-1 bg-gray-200 rounded-full h-2">
-                  <div 
+                  <div
                     :class="[
                       'h-full rounded-full transition-all duration-300',
-                      passwordStrength === 'weak' ? 'bg-red-500 w-1/3' :
-                      passwordStrength === 'medium' ? 'bg-yellow-500 w-2/3' :
-                      'bg-green-500 w-full'
+                      passwordStrength === 'weak'
+                        ? 'bg-red-500 w-1/3'
+                        : passwordStrength === 'medium'
+                          ? 'bg-yellow-500 w-2/3'
+                          : 'bg-green-500 w-full',
                     ]"
                   ></div>
                 </div>
-                <span 
+                <span
                   :class="[
                     'text-xs font-medium',
-                    passwordStrength === 'weak' ? 'text-red-600' :
-                    passwordStrength === 'medium' ? 'text-yellow-600' :
-                    'text-green-600'
+                    passwordStrength === 'weak'
+                      ? 'text-red-600'
+                      : passwordStrength === 'medium'
+                        ? 'text-yellow-600'
+                        : 'text-green-600',
                   ]"
                 >
                   {{ passwordStrength.charAt(0).toUpperCase() + passwordStrength.slice(1) }}
@@ -227,12 +234,16 @@ function checkPasswordStrength(password) {
                 required
                 :class="[
                   'appearance-none relative block w-full pl-10 px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 focus:z-10 sm:text-sm transition duration-200',
-                  errors.confirmPassword ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : ''
+                  errors.confirmPassword
+                    ? 'border-red-300 focus:ring-red-500 focus:border-red-500'
+                    : '',
                 ]"
                 placeholder="Confirm your password"
               />
             </div>
-            <p v-if="errors.confirmPassword" class="mt-1 text-sm text-red-600">{{ errors.confirmPassword }}</p>
+            <p v-if="errors.confirmPassword" class="mt-1 text-sm text-red-600">
+              {{ errors.confirmPassword }}
+            </p>
           </div>
         </div>
 
@@ -243,15 +254,31 @@ function checkPasswordStrength(password) {
             :disabled="isSubmitting"
             :class="[
               'group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white transition duration-200',
-              isSubmitting 
-                ? 'bg-gray-400 cursor-not-allowed' 
-                : 'bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500'
+              isSubmitting
+                ? 'bg-gray-400 cursor-not-allowed'
+                : 'bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500',
             ]"
           >
             <span v-if="isSubmitting" class="absolute left-0 inset-y-0 flex items-center pl-3">
-              <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              <svg
+                class="animate-spin h-5 w-5 text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  class="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  stroke-width="4"
+                ></circle>
+                <path
+                  class="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
               </svg>
             </span>
             {{ isSubmitting ? 'Creating Account...' : 'Create Account' }}
@@ -261,8 +288,11 @@ function checkPasswordStrength(password) {
         <!-- Login link -->
         <div class="text-center">
           <p class="text-sm text-gray-600">
-            Already have an account? 
-            <RouterLink to="/login" class="font-medium text-green-600 hover:text-green-500 transition duration-200">
+            Already have an account?
+            <RouterLink
+              to="/login"
+              class="font-medium text-green-600 hover:text-green-500 transition duration-200"
+            >
               Sign in here
             </RouterLink>
           </p>

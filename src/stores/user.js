@@ -68,6 +68,6 @@ export const useUserStore = defineStore('user', () => {
     setError,
     clearError,
     logout,
-    initializeAuth
+    initializeAuth,
   }
 })

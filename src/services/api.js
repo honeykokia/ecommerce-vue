@@ -6,9 +6,9 @@ async function apiRequest(url, options = {}) {
   const config = {
     headers: {
       'Content-Type': 'application/json',
-      ...options.headers
+      ...options.headers,
     },
-    ...options
+    ...options,
   }
 
   // Add token to requests if available
@@ -41,7 +41,7 @@ export const userApi = {
   async login(credentials) {
     return apiRequest('/users/login', {
       method: 'POST',
-      body: JSON.stringify(credentials)
+      body: JSON.stringify(credentials),
     })
   },
 
@@ -49,7 +49,7 @@ export const userApi = {
   async register(userData) {
     return apiRequest('/users/register', {
       method: 'POST',
-      body: JSON.stringify(userData)
+      body: JSON.stringify(userData),
     })
   },
 
@@ -62,7 +62,7 @@ export const userApi = {
   async updateProfile(userData) {
     return apiRequest('/users/me', {
       method: 'PUT',
-      body: JSON.stringify(userData)
+      body: JSON.stringify(userData),
     })
   },
 
@@ -70,14 +70,30 @@ export const userApi = {
   async changePassword(passwordData) {
     return apiRequest('/users/me/password', {
       method: 'PATCH',
-      body: JSON.stringify(passwordData)
+      body: JSON.stringify(passwordData),
     })
   },
 
   // Verify user token
   async verifyToken(token) {
     return apiRequest(`/users/verify/${token}`)
-  }
+  },
+
+  // Forgot password
+  async forgotPassword(emailData) {
+    return apiRequest('/users/forgot-password', {
+      method: 'POST',
+      body: JSON.stringify(emailData),
+    })
+  },
+
+  // Reset password
+  async resetPassword(resetData) {
+    return apiRequest('/users/reset-password', {
+      method: 'POST',
+      body: JSON.stringify(resetData),
+    })
+  },
 }
 
 // Order APIs
@@ -96,9 +112,9 @@ export const orderApi = {
   async createOrder(orderData) {
     return apiRequest('/orders/me', {
       method: 'POST',
-      body: JSON.stringify(orderData)
+      body: JSON.stringify(orderData),
     })
-  }
+  },
 }
 
 // Cart APIs
@@ -112,7 +128,7 @@ export const cartApi = {
   async addToCart(cartItem) {
     return apiRequest('/carts/me', {
       method: 'POST',
-      body: JSON.stringify(cartItem)
+      body: JSON.stringify(cartItem),
     })
   },
 
@@ -120,23 +136,23 @@ export const cartApi = {
   async updateCartItem(productId, quantity) {
     return apiRequest(`/carts/me/${productId}`, {
       method: 'PATCH',
-      body: JSON.stringify({ quantity })
+      body: JSON.stringify({ quantity }),
     })
   },
 
   // Remove item from cart
   async removeFromCart(productId) {
     return apiRequest(`/carts/me/${productId}`, {
-      method: 'DELETE'
+      method: 'DELETE',
     })
   },
 
   // Clear cart
   async clearCart() {
     return apiRequest('/carts/me', {
-      method: 'DELETE'
+      method: 'DELETE',
     })
-  }
+  },
 }
 
 // Product APIs
@@ -150,7 +166,7 @@ export const productApi = {
   // Get product by ID
   async getProduct(productId) {
     return apiRequest(`/products/${productId}`)
-  }
+  },
 }
 
 // Category APIs
@@ -158,7 +174,7 @@ export const categoryApi = {
   // Get all categories
   async getCategories() {
     return apiRequest('/categories')
-  }
+  },
 }
 
 // Promotion APIs
@@ -166,5 +182,5 @@ export const promotionApi = {
   // Get all promotions
   async getPromotions() {
     return apiRequest('/promotions')
-  }
+  },
 }

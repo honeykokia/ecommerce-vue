@@ -31,47 +31,57 @@ const router = createRouter({
       component: () => import('../views/RegisterView.vue'),
     },
     {
+      path: '/forgot-password',
+      name: 'forgot-password',
+      component: () => import('../views/ForgotPasswordView.vue'),
+    },
+    {
+      path: '/reset-password/:token?',
+      name: 'reset-password',
+      component: () => import('../views/ResetPasswordView.vue'),
+    },
+    {
       path: '/profile',
       name: 'profile',
       component: () => import('../views/ProfileView.vue'),
-      beforeEnter: requireAuth
+      beforeEnter: requireAuth,
     },
     {
       path: '/dashboard',
       name: 'dashboard',
       component: () => import('../views/DashboardView.vue'),
-      beforeEnter: requireAuth
+      beforeEnter: requireAuth,
     },
     {
       path: '/orders',
       name: 'orders',
       component: () => import('../views/OrdersView.vue'),
-      beforeEnter: requireAuth
+      beforeEnter: requireAuth,
     },
     {
       path: '/products',
       name: 'products',
-      component: () => import('../views/ProductListView.vue')
+      component: () => import('../views/ProductListView.vue'),
     },
     {
       path: '/cart',
       name: 'cart',
       component: () => import('../views/CartView.vue'),
-      beforeEnter: requireAuth
+      beforeEnter: requireAuth,
     },
     // Redirect old routes for compatibility
     {
       path: '/user/profile',
-      redirect: '/profile'
+      redirect: '/profile',
     },
     {
       path: '/user/dashboard',
-      redirect: '/dashboard'
+      redirect: '/dashboard',
     },
     {
       path: '/user/orders',
-      redirect: '/orders'
-    }
+      redirect: '/orders',
+    },
   ],
 })
 

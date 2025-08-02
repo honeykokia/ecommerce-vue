@@ -19,17 +19,14 @@ onMounted(async () => {
   }
 
   // Load cart and product data
-  await Promise.all([
-    cartStore.fetchCart(),
-    productStore.fetchProducts()
-  ])
+  await Promise.all([cartStore.fetchCart(), productStore.fetchProducts()])
 })
 
 const formatPrice = (price) => {
   return new Intl.NumberFormat('zh-TW', {
     style: 'currency',
     currency: 'TWD',
-    minimumFractionDigits: 0
+    minimumFractionDigits: 0,
   }).format(price)
 }
 
@@ -71,7 +68,7 @@ const goToProducts = () => {
         <h1 class="text-3xl font-bold text-gray-900 mb-2">購物車</h1>
         <p class="text-gray-600">檢視和管理您的購物車商品</p>
       </div>
-      
+
       <!-- Continue Shopping Button -->
       <button
         @click="goToProducts"
@@ -123,7 +120,7 @@ const goToProducts = () => {
             <h2 class="text-xl font-semibold text-gray-900">
               購物車商品 ({{ cartStore.cartCount }} 件)
             </h2>
-            
+
             <button
               @click="clearCart"
               :disabled="cartStore.isLoading"
@@ -136,8 +133,8 @@ const goToProducts = () => {
 
           <!-- Cart Items List -->
           <div class="space-y-4">
-            <CartItem 
-              v-for="item in cartStore.cartItems" 
+            <CartItem
+              v-for="item in cartStore.cartItems"
               :key="item.id || `${item.productId}-${item.createAt}`"
               :cart-item="item"
             />
@@ -158,14 +155,14 @@ const goToProducts = () => {
       <div class="lg:col-span-1">
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 sticky top-6">
           <h3 class="text-lg font-semibold text-gray-900 mb-4">訂單摘要</h3>
-          
+
           <!-- Price Breakdown -->
           <div class="space-y-3 mb-6">
             <div class="flex justify-between text-gray-600">
               <span>小計 ({{ cartStore.cartCount }} 件商品)</span>
               <span>{{ formatPrice(cartStore.cartTotal) }}</span>
             </div>
-            
+
             <div class="flex justify-between text-gray-600">
               <span>運費</span>
               <span>
@@ -173,14 +170,17 @@ const goToProducts = () => {
                 <span v-else>{{ formatPrice(shippingFee) }}</span>
               </span>
             </div>
-            
-            <div v-if="cartStore.cartTotal < 1000 && cartStore.cartTotal > 0" class="text-sm text-blue-600">
+
+            <div
+              v-if="cartStore.cartTotal < 1000 && cartStore.cartTotal > 0"
+              class="text-sm text-blue-600"
+            >
               <i class="fas fa-info-circle mr-1"></i>
               再購買 {{ formatPrice(1000 - cartStore.cartTotal) }} 即可享免運費
             </div>
-            
-            <hr class="border-gray-200">
-            
+
+            <hr class="border-gray-200" />
+
             <div class="flex justify-between text-lg font-semibold text-gray-900">
               <span>總計</span>
               <span>{{ formatPrice(finalTotal) }}</span>
@@ -210,7 +210,9 @@ const goToProducts = () => {
           </div>
 
           <!-- Promotion Banner -->
-          <div class="mt-6 p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border border-blue-200">
+          <div
+            class="mt-6 p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border border-blue-200"
+          >
             <div class="text-center">
               <i class="fas fa-gift text-blue-600 text-xl mb-2"></i>
               <h4 class="font-medium text-gray-900 mb-1">會員專屬優惠</h4>

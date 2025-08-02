@@ -6,8 +6,8 @@ import { useProductStore } from '../stores/product.js'
 const props = defineProps({
   cartItem: {
     type: Object,
-    required: true
-  }
+    required: true,
+  },
 })
 
 const cartStore = useCartStore()
@@ -16,25 +16,21 @@ const productStore = useProductStore()
 const isUpdating = ref(false)
 const quantityInput = ref(props.cartItem.quantity)
 
-const product = computed(() => 
-  productStore.getProductById(props.cartItem.productId)
-)
+const product = computed(() => productStore.getProductById(props.cartItem.productId))
 
-const itemTotal = computed(() => 
-  props.cartItem.unitPrice * props.cartItem.quantity
-)
+const itemTotal = computed(() => props.cartItem.unitPrice * props.cartItem.quantity)
 
 const formatPrice = (price) => {
   return new Intl.NumberFormat('zh-TW', {
     style: 'currency',
     currency: 'TWD',
-    minimumFractionDigits: 0
+    minimumFractionDigits: 0,
   }).format(price)
 }
 
 const updateQuantity = async (newQuantity) => {
   if (newQuantity < 1) return
-  
+
   isUpdating.value = true
   try {
     await cartStore.updateCartItemQuantity(props.cartItem.productId, newQuantity)
@@ -86,8 +82,8 @@ const onQuantityInputChange = () => {
     <div class="flex flex-col md:flex-row md:items-center gap-4">
       <!-- Product Image -->
       <div class="flex-shrink-0">
-        <img 
-          :src="product?.imageUrl || '/upload/defaultProduct.jpg'" 
+        <img
+          :src="product?.imageUrl || '/upload/defaultProduct.jpg'"
           :alt="product?.name || 'Product'"
           class="w-20 h-20 md:w-24 md:h-24 object-cover rounded-lg"
         />
@@ -98,17 +94,17 @@ const onQuantityInputChange = () => {
         <h3 class="font-semibold text-gray-900 text-lg mb-1 truncate">
           {{ product?.name || 'Loading...' }}
         </h3>
-        
+
         <p v-if="product?.shortDescription" class="text-gray-600 text-sm mb-2 line-clamp-2">
           {{ product.shortDescription }}
         </p>
-        
+
         <div class="flex flex-wrap items-center gap-4 text-sm text-gray-500">
           <span class="flex items-center">
             <i class="fas fa-dollar-sign mr-1"></i>
             單價: {{ formatPrice(cartItem.unitPrice) }}
           </span>
-          
+
           <span v-if="product?.inStock !== undefined" class="flex items-center">
             <i class="fas fa-box mr-1"></i>
             庫存: {{ product.inStock }}
@@ -126,7 +122,7 @@ const onQuantityInputChange = () => {
           >
             <i class="fas fa-minus text-sm"></i>
           </button>
-          
+
           <input
             v-model.number="quantityInput"
             @blur="onQuantityInputChange"
@@ -136,7 +132,7 @@ const onQuantityInputChange = () => {
             min="1"
             class="w-16 text-center border-0 focus:ring-0 disabled:bg-gray-50"
           />
-          
+
           <button
             @click="incrementQuantity"
             :disabled="isUpdating"
@@ -145,7 +141,7 @@ const onQuantityInputChange = () => {
             <i class="fas fa-plus text-sm"></i>
           </button>
         </div>
-        
+
         <!-- Loading indicator -->
         <div v-if="isUpdating" class="text-blue-600">
           <i class="fas fa-spinner fa-spin"></i>
@@ -157,7 +153,7 @@ const onQuantityInputChange = () => {
         <div class="text-lg font-bold text-gray-900">
           {{ formatPrice(itemTotal) }}
         </div>
-        
+
         <button
           @click="removeItem"
           :disabled="isUpdating"
@@ -170,8 +166,8 @@ const onQuantityInputChange = () => {
     </div>
 
     <!-- Stock Warning -->
-    <div 
-      v-if="product && product.inStock < cartItem.quantity" 
+    <div
+      v-if="product && product.inStock < cartItem.quantity"
       class="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg"
     >
       <div class="flex items-center text-yellow-800">
@@ -193,13 +189,13 @@ const onQuantityInputChange = () => {
 }
 
 /* Hide number input spinners */
-input[type="number"]::-webkit-outer-spin-button,
-input[type="number"]::-webkit-inner-spin-button {
+input[type='number']::-webkit-outer-spin-button,
+input[type='number']::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
 
-input[type="number"] {
+input[type='number'] {
   -moz-appearance: textfield;
 }
 </style>

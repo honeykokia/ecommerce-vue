@@ -19,17 +19,16 @@ export const useProductStore = defineStore('product', () => {
 
     // Filter by category
     if (selectedCategory.value) {
-      filtered = filtered.filter(product => 
-        product.categoryId === selectedCategory.value
-      )
+      filtered = filtered.filter((product) => product.categoryId === selectedCategory.value)
     }
 
     // Filter by search query
     if (searchQuery.value) {
       const query = searchQuery.value.toLowerCase()
-      filtered = filtered.filter(product =>
-        product.name.toLowerCase().includes(query) ||
-        product.shortDescription.toLowerCase().includes(query)
+      filtered = filtered.filter(
+        (product) =>
+          product.name.toLowerCase().includes(query) ||
+          product.shortDescription.toLowerCase().includes(query),
       )
     }
 
@@ -37,18 +36,18 @@ export const useProductStore = defineStore('product', () => {
   })
 
   const getProductById = computed(() => {
-    return (id) => products.value.find(product => product.id === id)
+    return (id) => products.value.find((product) => product.id === id)
   })
 
   const getCategoryById = computed(() => {
-    return (id) => categories.value.find(category => category.id === id)
+    return (id) => categories.value.find((category) => category.id === id)
   })
 
   // Actions
   async function fetchProducts(params = {}) {
     isLoading.value = true
     error.value = null
-    
+
     try {
       const response = await productApi.getProducts(params)
       products.value = response.data.products || []
@@ -56,7 +55,7 @@ export const useProductStore = defineStore('product', () => {
     } catch (err) {
       error.value = err.message || 'Failed to fetch products'
       console.warn('API unavailable, using mock data for demo:', err)
-      
+
       // Use mock data when API fails
       products.value = mockProducts
       useMockData.value = true
@@ -88,9 +87,9 @@ export const useProductStore = defineStore('product', () => {
     } catch (err) {
       error.value = err.message || 'Failed to fetch product'
       console.warn('API unavailable, using mock data:', err)
-      
+
       // Return mock product when API fails
-      const mockProduct = mockProducts.find(p => p.id === id)
+      const mockProduct = mockProducts.find((p) => p.id === id)
       return mockProduct || null
     } finally {
       isLoading.value = false
@@ -134,6 +133,6 @@ export const useProductStore = defineStore('product', () => {
     setSelectedCategory,
     setSearchQuery,
     clearFilters,
-    clearError
+    clearError,
   }
 })
