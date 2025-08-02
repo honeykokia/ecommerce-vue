@@ -17,7 +17,7 @@ const showOrderModal = ref(false)
 const filters = reactive({
   status: 'all',
   dateRange: 'all',
-  search: ''
+  search: '',
 })
 
 const statusOptions = [
@@ -26,14 +26,14 @@ const statusOptions = [
   { value: 'PAID', label: 'Paid' },
   { value: 'SHIPPED', label: 'Shipped' },
   { value: 'COMPLETED', label: 'Completed' },
-  { value: 'CANCELED', label: 'Cancelled' }
+  { value: 'CANCELED', label: 'Cancelled' },
 ]
 
 const dateRangeOptions = [
   { value: 'all', label: 'All Time' },
   { value: '7days', label: 'Last 7 Days' },
   { value: '30days', label: 'Last 30 Days' },
-  { value: '90days', label: 'Last 90 Days' }
+  { value: '90days', label: 'Last 90 Days' },
 ]
 
 // Load user orders
@@ -76,36 +76,37 @@ async function viewOrderDetails(order) {
 // Filter orders
 const filteredOrders = computed(() => {
   let filtered = [...orders.value]
-  
+
   // Filter by status
   if (filters.status !== 'all') {
-    filtered = filtered.filter(order => order.status === filters.status)
+    filtered = filtered.filter((order) => order.status === filters.status)
   }
-  
+
   // Filter by date range
   if (filters.dateRange !== 'all') {
     const now = new Date()
     const daysMap = {
       '7days': 7,
       '30days': 30,
-      '90days': 90
+      '90days': 90,
     }
-    
+
     if (daysMap[filters.dateRange]) {
-      const cutoffDate = new Date(now.getTime() - (daysMap[filters.dateRange] * 24 * 60 * 60 * 1000))
-      filtered = filtered.filter(order => new Date(order.createAt) >= cutoffDate)
+      const cutoffDate = new Date(now.getTime() - daysMap[filters.dateRange] * 24 * 60 * 60 * 1000)
+      filtered = filtered.filter((order) => new Date(order.createAt) >= cutoffDate)
     }
   }
-  
+
   // Filter by search
   if (filters.search) {
     const search = filters.search.toLowerCase()
-    filtered = filtered.filter(order =>
-      order.orderNumber.toLowerCase().includes(search) ||
-      order.status.toLowerCase().includes(search)
+    filtered = filtered.filter(
+      (order) =>
+        order.orderNumber.toLowerCase().includes(search) ||
+        order.status.toLowerCase().includes(search),
     )
   }
-  
+
   return filtered.sort((a, b) => new Date(b.createAt) - new Date(a.createAt))
 })
 
@@ -113,7 +114,7 @@ const filteredOrders = computed(() => {
 function formatCurrency(amount) {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
-    currency: 'USD'
+    currency: 'USD',
   }).format(amount / 100) // Assuming amounts are in cents
 }
 
@@ -124,18 +125,18 @@ function formatDate(dateString) {
     month: 'short',
     day: 'numeric',
     hour: '2-digit',
-    minute: '2-digit'
+    minute: '2-digit',
   })
 }
 
 // Get status color
 function getStatusColor(status) {
   const colors = {
-    'PENDING': 'yellow',
-    'PAID': 'blue',
-    'SHIPPED': 'purple',
-    'COMPLETED': 'green',
-    'CANCELED': 'red'
+    PENDING: 'yellow',
+    PAID: 'blue',
+    SHIPPED: 'purple',
+    COMPLETED: 'green',
+    CANCELED: 'red',
   }
   return colors[status] || 'gray'
 }
@@ -144,11 +145,11 @@ function getStatusColor(status) {
 function getStatusClasses(status) {
   const baseClasses = 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium'
   const colorClasses = {
-    'PENDING': 'bg-yellow-100 text-yellow-800',
-    'PAID': 'bg-blue-100 text-blue-800',
-    'SHIPPED': 'bg-purple-100 text-purple-800',
-    'COMPLETED': 'bg-green-100 text-green-800',
-    'CANCELED': 'bg-red-100 text-red-800'
+    PENDING: 'bg-yellow-100 text-yellow-800',
+    PAID: 'bg-blue-100 text-blue-800',
+    SHIPPED: 'bg-purple-100 text-purple-800',
+    COMPLETED: 'bg-green-100 text-green-800',
+    CANCELED: 'bg-red-100 text-red-800',
   }
   return `${baseClasses} ${colorClasses[status] || 'bg-gray-100 text-gray-800'}`
 }
@@ -156,9 +157,9 @@ function getStatusClasses(status) {
 // Get payment method display
 function getPaymentMethodDisplay(method) {
   const methods = {
-    'CREDIT_CARD': 'Credit Card',
-    'PAYPAL': 'PayPal',
-    'LINE_PAY': 'LINE Pay'
+    CREDIT_CARD: 'Credit Card',
+    PAYPAL: 'PayPal',
+    LINE_PAY: 'LINE Pay',
   }
   return methods[method] || method
 }
@@ -187,11 +188,7 @@ onMounted(() => {
               v-model="filters.status"
               class="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
             >
-              <option
-                v-for="option in statusOptions"
-                :key="option.value"
-                :value="option.value"
-              >
+              <option v-for="option in statusOptions" :key="option.value" :value="option.value">
                 {{ option.label }}
               </option>
             </select>
@@ -204,11 +201,7 @@ onMounted(() => {
               v-model="filters.dateRange"
               class="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
             >
-              <option
-                v-for="option in dateRangeOptions"
-                :key="option.value"
-                :value="option.value"
-              >
+              <option v-for="option in dateRangeOptions" :key="option.value" :value="option.value">
                 {{ option.label }}
               </option>
             </select>
@@ -233,7 +226,10 @@ onMounted(() => {
       </div>
 
       <!-- Error state -->
-      <div v-if="userStore.error" class="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg mb-6">
+      <div
+        v-if="userStore.error"
+        class="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg mb-6"
+      >
         <div class="flex">
           <i class="fas fa-exclamation-circle mt-0.5 mr-2"></i>
           <span>{{ userStore.error }}</span>
@@ -247,7 +243,10 @@ onMounted(() => {
       </div>
 
       <!-- Orders list -->
-      <div v-else-if="filteredOrders.length > 0" class="bg-white rounded-lg shadow-sm overflow-hidden">
+      <div
+        v-else-if="filteredOrders.length > 0"
+        class="bg-white rounded-lg shadow-sm overflow-hidden"
+      >
         <div class="px-6 py-4 border-b border-gray-200">
           <h2 class="text-lg font-medium text-gray-900">
             {{ filteredOrders.length }} {{ filteredOrders.length === 1 ? 'Order' : 'Orders' }}
@@ -264,9 +263,7 @@ onMounted(() => {
               <div class="flex-1">
                 <div class="flex items-center space-x-4">
                   <div>
-                    <p class="text-lg font-medium text-gray-900">
-                      Order #{{ order.orderNumber }}
-                    </p>
+                    <p class="text-lg font-medium text-gray-900">Order #{{ order.orderNumber }}</p>
                     <div class="flex items-center space-x-4 mt-1">
                       <p class="text-sm text-gray-600">
                         {{ formatDate(order.createAt) }}
@@ -281,11 +278,15 @@ onMounted(() => {
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
                   <div>
                     <p class="text-sm font-medium text-gray-500">Total Amount</p>
-                    <p class="text-lg font-bold text-gray-900">{{ formatCurrency(order.totalPrice) }}</p>
+                    <p class="text-lg font-bold text-gray-900">
+                      {{ formatCurrency(order.totalPrice) }}
+                    </p>
                   </div>
                   <div>
                     <p class="text-sm font-medium text-gray-500">Payment</p>
-                    <p class="text-sm text-gray-900">{{ getPaymentMethodDisplay(order.paymentMethod) }}</p>
+                    <p class="text-sm text-gray-900">
+                      {{ getPaymentMethodDisplay(order.paymentMethod) }}
+                    </p>
                     <p class="text-xs text-gray-600">
                       {{ order.isPaid ? 'Paid' : 'Unpaid' }}
                       <span v-if="order.paidAt">on {{ formatDate(order.paidAt) }}</span>
@@ -325,9 +326,10 @@ onMounted(() => {
           {{ filters.status !== 'all' || filters.search ? 'No matching orders' : 'No orders yet' }}
         </h3>
         <p class="text-gray-600 mb-6">
-          {{ filters.status !== 'all' || filters.search 
-            ? 'Try adjusting your filters to see more results.' 
-            : 'Start shopping to see your orders here.' 
+          {{
+            filters.status !== 'all' || filters.search
+              ? 'Try adjusting your filters to see more results.'
+              : 'Start shopping to see your orders here.'
           }}
         </p>
         <RouterLink
@@ -341,7 +343,10 @@ onMounted(() => {
     </div>
 
     <!-- Order Details Modal -->
-    <div v-if="showOrderModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center p-4 z-50">
+    <div
+      v-if="showOrderModal"
+      class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center p-4 z-50"
+    >
       <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-screen overflow-hidden">
         <div class="px-6 py-4 border-b border-gray-200">
           <div class="flex items-center justify-between">
@@ -356,7 +361,7 @@ onMounted(() => {
             </button>
           </div>
         </div>
-        
+
         <div class="p-6 overflow-y-auto max-h-96">
           <!-- Loading details -->
           <div v-if="isLoadingDetails" class="text-center py-8">

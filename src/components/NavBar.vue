@@ -26,7 +26,7 @@ function handleLogout() {
     <h1 class="text-2xl font-bold text-center md:text-3xl md:text-left">
       Welcome to My E-commerce Site
     </h1>
-    
+
     <ul class="flex flex-wrap justify-center md:justify-end items-center gap-6">
       <li>
         <RouterLink
@@ -51,7 +51,7 @@ function handleLogout() {
         >
           <i class="fa-solid fa-cart-shopping text-2xl"></i>
           <!-- Cart badge -->
-          <span 
+          <span
             v-if="userStore.isAuthenticated && cartStore.cartCount > 0"
             class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium"
           >
@@ -59,7 +59,7 @@ function handleLogout() {
           </span>
         </RouterLink>
       </li>
-      
+
       <!-- Authenticated user menu -->
       <li v-if="userStore.isAuthenticated" class="relative group">
         <button
@@ -69,9 +69,11 @@ function handleLogout() {
           <span class="hidden md:inline">{{ userStore.userName || 'User' }}</span>
           <i class="fa-solid fa-chevron-down text-sm"></i>
         </button>
-        
+
         <!-- Dropdown menu -->
-        <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+        <div
+          class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50"
+        >
           <div class="py-2">
             <RouterLink
               to="/dashboard"
@@ -100,7 +102,7 @@ function handleLogout() {
             >
               <i class="fas fa-shopping-cart mr-3 text-orange-600"></i>
               My Cart
-              <span 
+              <span
                 v-if="cartStore.cartCount > 0"
                 class="ml-auto bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center"
               >
@@ -125,7 +127,7 @@ function handleLogout() {
           </div>
         </div>
       </li>
-      
+
       <!-- Guest user login/register -->
       <li v-else>
         <RouterLink

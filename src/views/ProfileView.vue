@@ -15,7 +15,7 @@ const profile = reactive({
   phone: '',
   city: '',
   country: '',
-  address: ''
+  address: '',
 })
 
 // Component state
@@ -54,25 +54,25 @@ function toggleEdit() {
 // Validate form
 function validateForm() {
   const newErrors = {}
-  
+
   if (!profile.name || profile.name.trim().length === 0) {
     newErrors.name = 'Name is required'
   }
-  
+
   if (!profile.email) {
     newErrors.email = 'Email is required'
   } else if (!/\S+@\S+\.\S+/.test(profile.email)) {
     newErrors.email = 'Please enter a valid email address'
   }
-  
+
   if (profile.phone && !/^[0-9\-\+\s\(\)]{10,}$/.test(profile.phone)) {
     newErrors.phone = 'Please enter a valid phone number'
   }
-  
+
   if (profile.birthday && new Date(profile.birthday) > new Date()) {
     newErrors.birthday = 'Birthday cannot be in the future'
   }
-  
+
   errors.value = newErrors
   return Object.keys(newErrors).length === 0
 }
@@ -88,13 +88,13 @@ async function saveProfile() {
 
   try {
     const response = await userApi.updateProfile(profile)
-    
+
     // Update the original profile data
     originalProfile.value = { ...profile }
     userStore.setUser(profile)
-    
+
     isEditing.value = false
-    
+
     // Show success message (you might want to add a toast notification here)
     console.log('Profile updated successfully')
   } catch (error) {
@@ -138,9 +138,9 @@ onMounted(() => {
               :disabled="isLoading || isSaving"
               :class="[
                 'px-4 py-2 text-sm font-medium rounded-lg transition duration-200',
-                isEditing 
-                  ? 'bg-gray-600 hover:bg-gray-700 text-white' 
-                  : 'bg-blue-600 hover:bg-blue-700 text-white'
+                isEditing
+                  ? 'bg-gray-600 hover:bg-gray-700 text-white'
+                  : 'bg-blue-600 hover:bg-blue-700 text-white',
               ]"
             >
               <i :class="isEditing ? 'fas fa-times' : 'fas fa-edit'" class="mr-2"></i>
@@ -157,7 +157,10 @@ onMounted(() => {
       </div>
 
       <!-- Error state -->
-      <div v-else-if="userStore.error" class="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg mb-6">
+      <div
+        v-else-if="userStore.error"
+        class="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg mb-6"
+      >
         <div class="flex">
           <i class="fas fa-exclamation-circle mt-0.5 mr-2"></i>
           <span>{{ userStore.error }}</span>
@@ -171,8 +174,8 @@ onMounted(() => {
             <!-- Profile Image -->
             <div class="lg:col-span-2 flex items-center space-x-6">
               <div class="shrink-0">
-                <img 
-                  :src="profile.image" 
+                <img
+                  :src="profile.image"
                   :alt="profile.name || 'Profile'"
                   class="h-20 w-20 rounded-full object-cover border-4 border-gray-200"
                 />
@@ -192,9 +195,7 @@ onMounted(() => {
 
             <!-- Name -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">
-                Full Name
-              </label>
+              <label class="block text-sm font-medium text-gray-700 mb-2"> Full Name </label>
               <input
                 v-if="isEditing"
                 v-model="profile.name"
@@ -202,7 +203,7 @@ onMounted(() => {
                 type="text"
                 :class="[
                   'block w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm',
-                  errors.name ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : ''
+                  errors.name ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : '',
                 ]"
                 placeholder="Enter your full name"
               />
@@ -212,9 +213,7 @@ onMounted(() => {
 
             <!-- Email -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">
-                Email Address
-              </label>
+              <label class="block text-sm font-medium text-gray-700 mb-2"> Email Address </label>
               <input
                 v-if="isEditing"
                 v-model="profile.email"
@@ -222,7 +221,7 @@ onMounted(() => {
                 type="email"
                 :class="[
                   'block w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm',
-                  errors.email ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : ''
+                  errors.email ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : '',
                 ]"
                 placeholder="Enter your email"
               />
@@ -232,9 +231,7 @@ onMounted(() => {
 
             <!-- Gender -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">
-                Gender
-              </label>
+              <label class="block text-sm font-medium text-gray-700 mb-2"> Gender </label>
               <select
                 v-if="isEditing"
                 v-model="profile.gender"
@@ -251,9 +248,7 @@ onMounted(() => {
 
             <!-- Birthday -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">
-                Birthday
-              </label>
+              <label class="block text-sm font-medium text-gray-700 mb-2"> Birthday </label>
               <input
                 v-if="isEditing"
                 v-model="profile.birthday"
@@ -262,20 +257,22 @@ onMounted(() => {
                 :max="new Date().toISOString().split('T')[0]"
                 :class="[
                   'block w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm',
-                  errors.birthday ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : ''
+                  errors.birthday ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : '',
                 ]"
               />
               <p v-else class="text-gray-900 py-2">
-                {{ profile.birthday ? new Date(profile.birthday).toLocaleDateString() : 'Not provided' }}
+                {{
+                  profile.birthday
+                    ? new Date(profile.birthday).toLocaleDateString()
+                    : 'Not provided'
+                }}
               </p>
               <p v-if="errors.birthday" class="mt-1 text-sm text-red-600">{{ errors.birthday }}</p>
             </div>
 
             <!-- Phone -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">
-                Phone Number
-              </label>
+              <label class="block text-sm font-medium text-gray-700 mb-2"> Phone Number </label>
               <input
                 v-if="isEditing"
                 v-model="profile.phone"
@@ -283,7 +280,7 @@ onMounted(() => {
                 type="tel"
                 :class="[
                   'block w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm',
-                  errors.phone ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : ''
+                  errors.phone ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : '',
                 ]"
                 placeholder="Enter your phone number"
               />
@@ -293,9 +290,7 @@ onMounted(() => {
 
             <!-- City -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">
-                City
-              </label>
+              <label class="block text-sm font-medium text-gray-700 mb-2"> City </label>
               <input
                 v-if="isEditing"
                 v-model="profile.city"
@@ -308,9 +303,7 @@ onMounted(() => {
 
             <!-- Country -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">
-                Country/Region
-              </label>
+              <label class="block text-sm font-medium text-gray-700 mb-2"> Country/Region </label>
               <input
                 v-if="isEditing"
                 v-model="profile.country"
@@ -323,9 +316,7 @@ onMounted(() => {
 
             <!-- Address -->
             <div class="lg:col-span-2">
-              <label class="block text-sm font-medium text-gray-700 mb-2">
-                Address
-              </label>
+              <label class="block text-sm font-medium text-gray-700 mb-2"> Address </label>
               <textarea
                 v-if="isEditing"
                 v-model="profile.address"
@@ -352,15 +343,31 @@ onMounted(() => {
                 :disabled="isSaving"
                 :class="[
                   'px-6 py-2 text-sm font-medium rounded-lg text-white transition duration-200',
-                  isSaving 
-                    ? 'bg-gray-400 cursor-not-allowed' 
-                    : 'bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500'
+                  isSaving
+                    ? 'bg-gray-400 cursor-not-allowed'
+                    : 'bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500',
                 ]"
               >
                 <span v-if="isSaving" class="flex items-center">
-                  <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  <svg
+                    class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      class="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      stroke-width="4"
+                    ></circle>
+                    <path
+                      class="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
                   </svg>
                   Saving...
                 </span>

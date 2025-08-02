@@ -8,43 +8,43 @@ const products = ref([
     name: 'Product Name',
     price: 29.99,
     image: 'https://via.placeholder.com/150',
-    alt: 'Product Image'
+    alt: 'Product Image',
   },
   {
     id: 2,
     name: 'Product Name',
     price: 39.99,
     image: 'https://via.placeholder.com/150',
-    alt: 'Product Image'
+    alt: 'Product Image',
   },
   {
     id: 3,
     name: 'Product Name',
     price: 49.99,
     image: 'https://via.placeholder.com/150',
-    alt: 'Product Image'
+    alt: 'Product Image',
   },
   {
     id: 4,
     name: 'Product Name',
     price: 59.99,
     image: 'https://via.placeholder.com/150',
-    alt: 'Product Image'
+    alt: 'Product Image',
   },
   {
     id: 5,
     name: 'Product Name',
     price: 69.99,
     image: 'https://via.placeholder.com/150',
-    alt: 'Product Image'
+    alt: 'Product Image',
   },
   {
     id: 6,
     name: 'Product Name',
     price: 79.99,
     image: 'https://via.placeholder.com/150',
-    alt: 'Product Image'
-  }
+    alt: 'Product Image',
+  },
 ])
 
 // 添加到購物車功能
@@ -59,8 +59,8 @@ const addToCart = (product) => {
     <h2 class="text-2xl font-bold mb-4">Featured Products</h2>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
       <!-- 使用 v-for 遍歷商品 -->
-      <div 
-        v-for="product in products" 
+      <div
+        v-for="product in products"
         :key="product.id"
         class="bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300"
       >
