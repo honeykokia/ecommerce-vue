@@ -14,15 +14,13 @@ export const useCartStore = defineStore('cart', () => {
   })
 
   const cartTotal = computed(() => {
-    return cartItems.value.reduce((total, item) => 
-      total + (item.unitPrice * item.quantity), 0
-    )
+    return cartItems.value.reduce((total, item) => total + item.unitPrice * item.quantity, 0)
   })
 
   const isCartEmpty = computed(() => cartItems.value.length === 0)
 
   const getCartItemByProductId = computed(() => {
-    return (productId) => cartItems.value.find(item => item.productId === productId)
+    return (productId) => cartItems.value.find((item) => item.productId === productId)
   })
 
   // Actions
@@ -49,13 +47,13 @@ export const useCartStore = defineStore('cart', () => {
       const cartItem = {
         productId,
         quantity,
-        unitPrice
+        unitPrice,
       }
 
       await cartApi.addToCart(cartItem)
-      
+
       // Update local cart state
-      const existingItem = cartItems.value.find(item => item.productId === productId)
+      const existingItem = cartItems.value.find((item) => item.productId === productId)
       if (existingItem) {
         existingItem.quantity += quantity
       } else {
@@ -65,7 +63,7 @@ export const useCartStore = defineStore('cart', () => {
           unitPrice,
           id: Date.now(), // Temporary ID until we get the real one from the server
           createAt: new Date().toISOString(),
-          updateAt: new Date().toISOString()
+          updateAt: new Date().toISOString(),
         })
       }
 
@@ -90,9 +88,9 @@ export const useCartStore = defineStore('cart', () => {
 
     try {
       await cartApi.updateCartItem(productId, quantity)
-      
+
       // Update local state
-      const item = cartItems.value.find(item => item.productId === productId)
+      const item = cartItems.value.find((item) => item.productId === productId)
       if (item) {
         item.quantity = quantity
         item.updateAt = new Date().toISOString()
@@ -114,9 +112,9 @@ export const useCartStore = defineStore('cart', () => {
 
     try {
       await cartApi.removeFromCart(productId)
-      
+
       // Update local state
-      cartItems.value = cartItems.value.filter(item => item.productId !== productId)
+      cartItems.value = cartItems.value.filter((item) => item.productId !== productId)
     } catch (err) {
       error.value = err.message || 'Failed to remove item from cart'
       console.error('Error removing from cart:', err)
@@ -164,6 +162,6 @@ export const useCartStore = defineStore('cart', () => {
     updateCartItemQuantity,
     removeFromCart,
     clearCart,
-    clearError
+    clearError,
   }
 })

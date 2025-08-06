@@ -11,54 +11,59 @@ const sortOrder = ref('asc')
 
 onMounted(async () => {
   // Load categories and products on component mount
-  await Promise.all([
-    productStore.fetchCategories(),
-    productStore.fetchProducts()
-  ])
+  await Promise.all([productStore.fetchCategories(), productStore.fetchProducts()])
 })
 
 // Watch for filter changes and refetch products
-watch([() => productStore.selectedCategory, () => productStore.searchQuery], async () => {
-  const params = {}
-  
-  if (productStore.selectedCategory) {
-    params.categoryId = productStore.selectedCategory
-  }
-  
-  if (productStore.searchQuery) {
-    params.name = productStore.searchQuery
-  }
-  
-  await productStore.fetchProducts(params)
-}, { deep: true })
+watch(
+  [() => productStore.selectedCategory, () => productStore.searchQuery],
+  async () => {
+    const params = {}
+
+    if (productStore.selectedCategory) {
+      params.categoryId = productStore.selectedCategory
+    }
+
+    if (productStore.searchQuery) {
+      params.name = productStore.searchQuery
+    }
+
+    await productStore.fetchProducts(params)
+  },
+  { deep: true },
+)
 
 const sortedProducts = ref([])
 
 // Watch for products changes and apply sorting
-watch(() => productStore.filteredProducts, (products) => {
-  sortedProducts.value = [...products].sort((a, b) => {
-    let aValue = a[sortBy.value]
-    let bValue = b[sortBy.value]
-    
-    // Handle numeric sorting
-    if (sortBy.value === 'price' || sortBy.value === 'rating' || sortBy.value === 'soldCount') {
-      aValue = Number(aValue)
-      bValue = Number(bValue)
-    }
-    
-    // Handle string sorting
-    if (typeof aValue === 'string') {
-      aValue = aValue.toLowerCase()
-      bValue = bValue.toLowerCase()
-    }
-    
-    if (sortOrder.value === 'asc') {
-      return aValue > bValue ? 1 : -1
-    } else {
-      return aValue < bValue ? 1 : -1
-    }
-  })
-}, { immediate: true })
+watch(
+  () => productStore.filteredProducts,
+  (products) => {
+    sortedProducts.value = [...products].sort((a, b) => {
+      let aValue = a[sortBy.value]
+      let bValue = b[sortBy.value]
+
+      // Handle numeric sorting
+      if (sortBy.value === 'price' || sortBy.value === 'rating' || sortBy.value === 'soldCount') {
+        aValue = Number(aValue)
+        bValue = Number(bValue)
+      }
+
+      // Handle string sorting
+      if (typeof aValue === 'string') {
+        aValue = aValue.toLowerCase()
+        bValue = bValue.toLowerCase()
+      }
+
+      if (sortOrder.value === 'asc') {
+        return aValue > bValue ? 1 : -1
+      } else {
+        return aValue < bValue ? 1 : -1
+      }
+    })
+  },
+  { immediate: true },
+)
 
 const handleSortChange = () => {
   // Sorting is handled by the watcher above
@@ -77,10 +82,10 @@ const clearFilters = () => {
     <div class="mb-6">
       <h1 class="text-3xl font-bold text-gray-900 mb-2">商品列表</h1>
       <p class="text-gray-600">探索我們精選的商品</p>
-      
+
       <!-- Demo Notice -->
-      <div 
-        v-if="productStore.useMockData" 
+      <div
+        v-if="productStore.useMockData"
         class="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg"
       >
         <div class="flex items-center text-blue-800">
@@ -108,7 +113,9 @@ const clearFilters = () => {
               placeholder="輸入商品名稱或描述..."
               class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
-            <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+            <i
+              class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+            ></i>
           </div>
         </div>
 
@@ -123,8 +130,8 @@ const clearFilters = () => {
             class="w-full py-2 px-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           >
             <option :value="null">全部分類</option>
-            <option 
-              v-for="category in productStore.categories" 
+            <option
+              v-for="category in productStore.categories"
               :key="category.id"
               :value="category.id"
             >
@@ -135,9 +142,7 @@ const clearFilters = () => {
 
         <!-- Sort Options -->
         <div>
-          <label for="sort" class="block text-sm font-medium text-gray-700 mb-2">
-            排序方式
-          </label>
+          <label for="sort" class="block text-sm font-medium text-gray-700 mb-2"> 排序方式 </label>
           <div class="flex space-x-2">
             <select
               id="sort"
@@ -177,12 +182,8 @@ const clearFilters = () => {
     <!-- View Toggle and Results Count -->
     <div class="flex justify-between items-center mb-6">
       <div class="text-gray-600">
-        <span v-if="!productStore.isLoading">
-          找到 {{ sortedProducts.length }} 項商品
-        </span>
-        <span v-else>
-          載入中...
-        </span>
+        <span v-if="!productStore.isLoading"> 找到 {{ sortedProducts.length }} 項商品 </span>
+        <span v-else> 載入中... </span>
       </div>
 
       <div class="flex items-center space-x-4">
@@ -192,7 +193,7 @@ const clearFilters = () => {
             @click="isGridView = true"
             :class="{
               'text-blue-600 bg-blue-50': isGridView,
-              'text-gray-600 hover:text-blue-600': !isGridView
+              'text-gray-600 hover:text-blue-600': !isGridView,
             }"
             class="p-2 rounded-lg transition-colors duration-200"
           >
@@ -202,7 +203,7 @@ const clearFilters = () => {
             @click="isGridView = false"
             :class="{
               'text-blue-600 bg-blue-50': !isGridView,
-              'text-gray-600 hover:text-blue-600': isGridView
+              'text-gray-600 hover:text-blue-600': isGridView,
             }"
             class="p-2 rounded-lg transition-colors duration-200"
           >
@@ -245,28 +246,24 @@ const clearFilters = () => {
     <!-- Products Grid/List -->
     <div v-else>
       <!-- Grid View -->
-      <div 
-        v-if="isGridView" 
+      <div
+        v-if="isGridView"
         class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
       >
-        <ProductCard 
-          v-for="product in sortedProducts" 
-          :key="product.id"
-          :product="product"
-        />
+        <ProductCard v-for="product in sortedProducts" :key="product.id" :product="product" />
       </div>
 
       <!-- List View -->
       <div v-else class="space-y-4">
-        <div 
-          v-for="product in sortedProducts" 
+        <div
+          v-for="product in sortedProducts"
           :key="product.id"
           class="bg-white rounded-lg shadow-sm border border-gray-200 p-6"
         >
           <div class="flex flex-col md:flex-row gap-6">
             <div class="flex-shrink-0">
-              <img 
-                :src="product.imageUrl || '/upload/defaultProduct.jpg'" 
+              <img
+                :src="product.imageUrl || '/upload/defaultProduct.jpg'"
                 :alt="product.name"
                 class="w-full md:w-48 h-48 object-cover rounded-lg"
               />
@@ -276,7 +273,7 @@ const clearFilters = () => {
                 <h3 class="text-xl font-bold text-gray-900 mb-2">{{ product.name }}</h3>
                 <p class="text-gray-600">{{ product.shortDescription }}</p>
               </div>
-              
+
               <div class="flex flex-wrap items-center gap-4 mb-4 text-sm text-gray-600">
                 <span class="flex items-center">
                   <i class="fas fa-star text-yellow-400 mr-1"></i>
@@ -285,7 +282,7 @@ const clearFilters = () => {
                 <span>已售 {{ product.soldCount }}</span>
                 <span>庫存 {{ product.inStock }}</span>
               </div>
-              
+
               <div class="flex items-center justify-between">
                 <div class="text-2xl font-bold text-red-600">
                   NT$ {{ product.price.toLocaleString() }}

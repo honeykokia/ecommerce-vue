@@ -1,7 +1,5 @@
 <script setup>
-import NavBar from './components/NavBar.vue';
-
-
+import NavBar from './components/NavBar.vue'
 </script>
 
 <template>
@@ -15,7 +13,7 @@ import NavBar from './components/NavBar.vue';
 </template>
 
 <style scoped>
-  .header{
-    @apply bg-white shadow-md p-6
-  }
+.header {
+  @apply bg-white shadow-md p-6;
+}
 </style>
