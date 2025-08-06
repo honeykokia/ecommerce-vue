@@ -170,10 +170,7 @@ function checkPasswordStrength(password) {
               <input
                 id="password"
                 v-model="formData.password"
-                @input="
-                  clearFieldError('password')
-                  checkPasswordStrength(formData.password)
-                "
+                @input="clearFieldError('password'), checkPasswordStrength(formData.password)"
                 type="password"
                 autocomplete="new-password"
                 required
