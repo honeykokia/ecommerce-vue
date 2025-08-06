@@ -47,6 +47,12 @@ const router = createRouter({
       beforeEnter: requireAuth,
     },
     {
+      path: '/profile/avatar',
+      name: 'avatar-edit',
+      component: () => import('../views/AvatarEditView.vue'),
+      beforeEnter: requireAuth,
+    },
+    {
       path: '/dashboard',
       name: 'dashboard',
       component: () => import('../views/DashboardView.vue'),

@@ -5,10 +5,14 @@ const API_BASE_URL = 'http://localhost:8080'
 async function apiRequest(url, options = {}) {
   const config = {
     headers: {
-      'Content-Type': 'application/json',
       ...options.headers,
     },
     ...options,
+  }
+
+  // Only set Content-Type for JSON requests
+  if (!(options.body instanceof FormData)) {
+    config.headers['Content-Type'] = 'application/json'
   }
 
   // Add token to requests if available
@@ -63,6 +67,17 @@ export const userApi = {
     return apiRequest('/users/me', {
       method: 'PUT',
       body: JSON.stringify(userData),
+    })
+  },
+
+  // Update user avatar
+  async updateAvatar(formData) {
+    return apiRequest('/users/me/avatar', {
+      method: 'PUT',
+      headers: {
+        // Don't set Content-Type for FormData, let browser set it with boundary
+      },
+      body: formData,
     })
   },
 
