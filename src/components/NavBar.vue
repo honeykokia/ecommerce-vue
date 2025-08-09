@@ -116,6 +116,13 @@ function handleLogout() {
               <i class="fas fa-receipt mr-3 text-purple-600"></i>
               My Orders
             </RouterLink>
+            <RouterLink
+              to="/admin"
+              class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition duration-200"
+            >
+              <i class="fas fa-cog mr-3 text-red-600"></i>
+              Admin Panel
+            </RouterLink>
             <div class="border-t border-gray-200 my-2"></div>
             <button
               @click="handleLogout"
