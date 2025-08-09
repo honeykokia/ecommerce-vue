@@ -1,8 +1,12 @@
+import { useUserStore } from "@/stores/user"
+import router from "@/router"
+
 // Base API configuration
 const API_BASE_URL = 'http://localhost:8080'
 
 // Helper function to make API requests
 async function apiRequest(url, options = {}) {
+  const userStore = useUserStore();
   const config = {
     headers: {
       ...options.headers,
@@ -25,14 +29,12 @@ async function apiRequest(url, options = {}) {
     const response = await fetch(`${API_BASE_URL}${url}`, config)
     const result = await response.json()
 
-    if (!response.ok) {
-      if (result.data.errors) {
-        return result.data
-      }
-      throw new Error(result.message || 'API request failed')
+    if (response.status === 401) {
+      userStore.logout()
+      router.push('/login')
     }
 
-    return result.data
+    return result
   } catch (error) {
     console.error('API Error:', error)
     throw error
