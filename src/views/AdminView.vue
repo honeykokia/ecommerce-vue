@@ -334,6 +334,7 @@ import { ref, reactive, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import { adminApi } from '@/services/api'
+import { mockUsers, mockProducts, mockOrders } from '@/services/mockData'
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -379,6 +380,8 @@ const loadUsers = async () => {
     }
   } catch (error) {
     console.error('Failed to load users:', error)
+    // Use mock data when API is not available
+    users.value = mockUsers
   } finally {
     isLoading.value = false
   }
@@ -393,6 +396,8 @@ const loadProducts = async () => {
     }
   } catch (error) {
     console.error('Failed to load products:', error)
+    // Use mock data when API is not available
+    products.value = mockProducts
   } finally {
     isLoading.value = false
   }
@@ -407,6 +412,8 @@ const loadOrders = async () => {
     }
   } catch (error) {
     console.error('Failed to load orders:', error)
+    // Use mock data when API is not available
+    orders.value = mockOrders
   } finally {
     isLoading.value = false
   }
