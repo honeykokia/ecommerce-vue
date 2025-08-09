@@ -118,3 +118,83 @@ export const mockCart = [
     updateAt: '2025-01-31T10:30:00',
   },
 ]
+
+// Mock users for admin testing
+export const mockUsers = [
+  {
+    id: 1,
+    email: 'admin@example.com',
+    name: 'Admin User',
+    status: 'ACTIVE'
+  },
+  {
+    id: 2,
+    email: 'john.doe@example.com',
+    name: 'John Doe',
+    status: 'ACTIVE'
+  },
+  {
+    id: 3,
+    email: 'jane.smith@example.com',
+    name: 'Jane Smith',
+    status: 'INACTIVE'
+  },
+  {
+    id: 4,
+    email: 'banned.user@example.com',
+    name: 'Banned User',
+    status: 'BANNED'
+  }
+]
+
+// Mock orders for admin testing  
+export const mockOrders = [
+  {
+    id: 1,
+    userId: 2,
+    orderNumber: 'ORD123456789',
+    status: 'PENDING',
+    paymentMethod: 'CREDIT_CARD',
+    isPaid: false,
+    paidAt: null,
+    cancelledAt: null,
+    shippingMethod: 'STANDARD',
+    shippingAddress: '台北市中正區某某路123號',
+    shippingStatus: 'PENDING',
+    totalPrice: 5998,
+    createAt: '2025-01-31T10:00:00',
+    updateAt: '2025-01-31T10:00:00'
+  },
+  {
+    id: 2,
+    userId: 3,
+    orderNumber: 'ORD987654321',
+    status: 'SHIPPED',
+    paymentMethod: 'LINE_PAY',
+    isPaid: true,
+    paidAt: '2025-01-30T15:30:00',
+    cancelledAt: null,
+    shippingMethod: 'EXPRESS',
+    shippingAddress: '高雄市新興區某某街456號',
+    shippingStatus: 'SHIPPED',
+    totalPrice: 3599,
+    createAt: '2025-01-30T14:00:00',
+    updateAt: '2025-01-31T09:00:00'
+  },
+  {
+    id: 3,
+    userId: 2,
+    orderNumber: 'ORD555666777',
+    status: 'COMPLETED',
+    paymentMethod: 'PAYPAL',
+    isPaid: true,
+    paidAt: '2025-01-29T11:15:00',
+    cancelledAt: null,
+    shippingMethod: 'STANDARD',
+    shippingAddress: '台中市西區某某巷789號',
+    shippingStatus: 'DELIVERED',
+    totalPrice: 1299,
+    createAt: '2025-01-29T10:00:00',
+    updateAt: '2025-01-30T16:00:00'
+  }
+]

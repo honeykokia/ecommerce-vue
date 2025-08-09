@@ -201,3 +201,62 @@ export const promotionApi = {
     return apiRequest('/promotions')
   },
 }
+
+// Admin APIs
+export const adminApi = {
+  // User management
+  async getUsers() {
+    return apiRequest('/admin/users')
+  },
+
+  async updateUserStatus(userId, statusData) {
+    return apiRequest(`/admin/users/${userId}/status`, {
+      method: 'PATCH',
+      body: JSON.stringify(statusData),
+    })
+  },
+
+  // Product management
+  async createProduct(productData) {
+    return apiRequest('/admin/products', {
+      method: 'POST',
+      body: JSON.stringify(productData),
+    })
+  },
+
+  async updateProduct(productId, productData) {
+    return apiRequest(`/admin/products/${productId}`, {
+      method: 'PUT',
+      body: JSON.stringify(productData),
+    })
+  },
+
+  async deleteProduct(productId) {
+    return apiRequest(`/admin/products/${productId}`, {
+      method: 'DELETE',
+    })
+  },
+
+  // For getting products in admin view, we can reuse the regular product API
+  async getProducts() {
+    return apiRequest('/products')
+  },
+
+  // Order management
+  async getOrders() {
+    return apiRequest('/admin/orders')
+  },
+
+  async updateOrderStatus(orderId, statusData) {
+    return apiRequest(`/admin/orders/${orderId}`, {
+      method: 'PATCH',
+      body: JSON.stringify(statusData),
+    })
+  },
+
+  async deleteOrder(orderId) {
+    return apiRequest(`/admin/orders/${orderId}`, {
+      method: 'DELETE',
+    })
+  },
+}
