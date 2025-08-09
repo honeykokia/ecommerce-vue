@@ -48,6 +48,13 @@ const quickActions = [
     action: () => router.push('/orders'),
   },
   {
+    title: 'View Promotion',
+    description: 'Check current deals and offers',
+    icon: 'fas fa-percentage',
+    color: 'red',
+    action: () => router.push('/promotions'),
+  },
+  {
     title: 'Change Password',
     description: 'Update your password',
     icon: 'fas fa-lock',
