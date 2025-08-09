@@ -198,3 +198,40 @@ export const mockOrders = [
     updateAt: '2025-01-30T16:00:00'
   }
 ]
+
+// Mock promotions for testing
+export const mockPromotions = [
+  {
+    id: 1,
+    name: '夏季大促銷',
+    discountType: 'PERCENTAGE',
+    discountValue: 50,
+    description: '全館商品最高折扣50%，限時優惠不要錯過！精選商品包含3C產品、生活用品等。',
+    startDate: '2025-01-01T00:00:00',
+    endDate: '2025-12-31T23:59:59',
+    imageUrl: 'https://via.placeholder.com/400x300/FF6B6B/FFFFFF?text=Summer+Sale',
+    isActive: true
+  },
+  {
+    id: 2,
+    name: '新年特惠',
+    discountType: 'FIXED',
+    discountValue: 200,
+    description: '新年回饋，滿額立減200元！適用於所有商品，與其他優惠不可併用。',
+    startDate: '2024-12-20T00:00:00',
+    endDate: '2025-02-28T23:59:59',
+    imageUrl: 'https://via.placeholder.com/400x300/4ECDC4/FFFFFF?text=New+Year',
+    isActive: true
+  },
+  {
+    id: 3,
+    name: '週年慶典',
+    discountType: 'PERCENTAGE',
+    discountValue: 30,
+    description: '慶祝成立週年，精選商品3折起！限量商品數量有限，售完為止。',
+    startDate: '2024-12-01T00:00:00',
+    endDate: '2024-12-31T23:59:59',
+    imageUrl: 'https://via.placeholder.com/400x300/45B7D1/FFFFFF?text=Anniversary',
+    isActive: false
+  }
+]

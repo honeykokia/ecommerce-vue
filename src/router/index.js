@@ -81,6 +81,12 @@ const router = createRouter({
       component: () => import('../views/AdminView.vue'),
       beforeEnter: requireAuth,
     },
+    {
+      path: '/promotions',
+      name: 'promotions',
+      component: () => import('../views/PromotionView.vue'),
+      beforeEnter: requireAuth,
+    },
     // Redirect old routes for compatibility
     {
       path: '/user/profile',
