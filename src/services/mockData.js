@@ -125,29 +125,29 @@ export const mockUsers = [
     id: 1,
     email: 'admin@example.com',
     name: 'Admin User',
-    status: 'ACTIVE'
+    status: 'ACTIVE',
   },
   {
     id: 2,
     email: 'john.doe@example.com',
     name: 'John Doe',
-    status: 'ACTIVE'
+    status: 'ACTIVE',
   },
   {
     id: 3,
     email: 'jane.smith@example.com',
     name: 'Jane Smith',
-    status: 'INACTIVE'
+    status: 'INACTIVE',
   },
   {
     id: 4,
     email: 'banned.user@example.com',
     name: 'Banned User',
-    status: 'BANNED'
-  }
+    status: 'BANNED',
+  },
 ]
 
-// Mock orders for admin testing  
+// Mock orders for admin testing
 export const mockOrders = [
   {
     id: 1,
@@ -163,7 +163,7 @@ export const mockOrders = [
     shippingStatus: 'PENDING',
     totalPrice: 5998,
     createAt: '2025-01-31T10:00:00',
-    updateAt: '2025-01-31T10:00:00'
+    updateAt: '2025-01-31T10:00:00',
   },
   {
     id: 2,
@@ -179,7 +179,7 @@ export const mockOrders = [
     shippingStatus: 'SHIPPED',
     totalPrice: 3599,
     createAt: '2025-01-30T14:00:00',
-    updateAt: '2025-01-31T09:00:00'
+    updateAt: '2025-01-31T09:00:00',
   },
   {
     id: 3,
@@ -195,8 +195,8 @@ export const mockOrders = [
     shippingStatus: 'DELIVERED',
     totalPrice: 1299,
     createAt: '2025-01-29T10:00:00',
-    updateAt: '2025-01-30T16:00:00'
-  }
+    updateAt: '2025-01-30T16:00:00',
+  },
 ]
 
 // Mock promotions for testing
@@ -210,7 +210,7 @@ export const mockPromotions = [
     startDate: '2025-01-01T00:00:00',
     endDate: '2025-12-31T23:59:59',
     imageUrl: 'https://via.placeholder.com/400x300/FF6B6B/FFFFFF?text=Summer+Sale',
-    isActive: true
+    isActive: true,
   },
   {
     id: 2,
@@ -221,7 +221,7 @@ export const mockPromotions = [
     startDate: '2024-12-20T00:00:00',
     endDate: '2025-02-28T23:59:59',
     imageUrl: 'https://via.placeholder.com/400x300/4ECDC4/FFFFFF?text=New+Year',
-    isActive: true
+    isActive: true,
   },
   {
     id: 3,
@@ -232,6 +232,6 @@ export const mockPromotions = [
     startDate: '2024-12-01T00:00:00',
     endDate: '2024-12-31T23:59:59',
     imageUrl: 'https://via.placeholder.com/400x300/45B7D1/FFFFFF?text=Anniversary',
-    isActive: false
-  }
+    isActive: false,
+  },
 ]

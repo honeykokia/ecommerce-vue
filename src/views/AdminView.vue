@@ -32,7 +32,7 @@
               'py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap',
               activeTab === tab.id
                 ? 'border-blue-500 text-blue-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300',
             ]"
           >
             {{ tab.name }}
@@ -51,7 +51,9 @@
           </div>
           <div class="px-6 py-4">
             <div v-if="isLoading" class="text-center py-4">
-              <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+              <div
+                class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"
+              ></div>
             </div>
             <div v-else-if="users.length === 0" class="text-center py-8 text-gray-500">
               No users found
@@ -60,32 +62,60 @@
               <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                   <tr>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    <th
+                      class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                      User
+                    </th>
+                    <th
+                      class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                      Email
+                    </th>
+                    <th
+                      class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                      Status
+                    </th>
+                    <th
+                      class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                      Actions
+                    </th>
                   </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
                   <tr v-for="user in users" :key="user.id">
                     <td class="px-6 py-4 whitespace-nowrap">
                       <div class="flex items-center">
-                        <div class="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center">
-                          <span class="text-sm font-medium text-gray-700">{{ user.name?.charAt(0) || 'U' }}</span>
+                        <div
+                          class="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center"
+                        >
+                          <span class="text-sm font-medium text-gray-700">{{
+                            user.name?.charAt(0) || 'U'
+                          }}</span>
                         </div>
                         <div class="ml-4">
-                          <div class="text-sm font-medium text-gray-900">{{ user.name || 'Unknown' }}</div>
+                          <div class="text-sm font-medium text-gray-900">
+                            {{ user.name || 'Unknown' }}
+                          </div>
                         </div>
                       </div>
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ user.email }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {{ user.email }}
+                    </td>
                     <td class="px-6 py-4 whitespace-nowrap">
-                      <span :class="[
-                        'inline-flex px-2 py-1 text-xs font-semibold rounded-full',
-                        user.status === 'ACTIVE' ? 'bg-green-100 text-green-800' :
-                        user.status === 'INACTIVE' ? 'bg-yellow-100 text-yellow-800' :
-                        'bg-red-100 text-red-800'
-                      ]">
+                      <span
+                        :class="[
+                          'inline-flex px-2 py-1 text-xs font-semibold rounded-full',
+                          user.status === 'ACTIVE'
+                            ? 'bg-green-100 text-green-800'
+                            : user.status === 'INACTIVE'
+                              ? 'bg-yellow-100 text-yellow-800'
+                              : 'bg-red-100 text-red-800',
+                        ]"
+                      >
                         {{ user.status || 'ACTIVE' }}
                       </span>
                     </td>
@@ -114,7 +144,10 @@
           <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
             <h2 class="text-lg font-medium text-gray-900">Product Management</h2>
             <button
-              @click="showProductForm = true; editingProduct = null"
+              @click="
+                showProductForm = true
+                editingProduct = null
+              "
               class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
             >
               Add Product
@@ -122,7 +155,9 @@
           </div>
           <div class="px-6 py-4">
             <div v-if="isLoading" class="text-center py-4">
-              <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+              <div
+                class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"
+              ></div>
             </div>
             <div v-else-if="products.length === 0" class="text-center py-8 text-gray-500">
               No products found
@@ -131,10 +166,26 @@
               <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                   <tr>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stock</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    <th
+                      class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                      Product
+                    </th>
+                    <th
+                      class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                      Price
+                    </th>
+                    <th
+                      class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                      Stock
+                    </th>
+                    <th
+                      class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                      Actions
+                    </th>
                   </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
@@ -145,15 +196,19 @@
                           :src="product.imageUrl || '/placeholder-product.jpg'"
                           :alt="product.name"
                           class="h-10 w-10 rounded object-cover"
-                        >
+                        />
                         <div class="ml-4">
                           <div class="text-sm font-medium text-gray-900">{{ product.name }}</div>
                           <div class="text-sm text-gray-500">{{ product.shortDescription }}</div>
                         </div>
                       </div>
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${{ product.price }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ product.inStock }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      ${{ product.price }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {{ product.inStock }}
+                    </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
                       <button
                         @click="editProduct(product)"
@@ -184,7 +239,9 @@
           </div>
           <div class="px-6 py-4">
             <div v-if="isLoading" class="text-center py-4">
-              <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+              <div
+                class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"
+              ></div>
             </div>
             <div v-else-if="orders.length === 0" class="text-center py-8 text-gray-500">
               No orders found
@@ -193,12 +250,36 @@
               <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                   <tr>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order #</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    <th
+                      class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                      Order #
+                    </th>
+                    <th
+                      class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                      User
+                    </th>
+                    <th
+                      class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                      Total
+                    </th>
+                    <th
+                      class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                      Status
+                    </th>
+                    <th
+                      class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                      Date
+                    </th>
+                    <th
+                      class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                      Actions
+                    </th>
                   </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
@@ -209,16 +290,24 @@
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       User #{{ order.userId }}
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${{ order.totalPrice }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      ${{ order.totalPrice }}
+                    </td>
                     <td class="px-6 py-4 whitespace-nowrap">
-                      <span :class="[
-                        'inline-flex px-2 py-1 text-xs font-semibold rounded-full',
-                        order.status === 'COMPLETED' ? 'bg-green-100 text-green-800' :
-                        order.status === 'PENDING' ? 'bg-yellow-100 text-yellow-800' :
-                        order.status === 'SHIPPED' ? 'bg-blue-100 text-blue-800' :
-                        order.status === 'PAID' ? 'bg-purple-100 text-purple-800' :
-                        'bg-red-100 text-red-800'
-                      ]">
+                      <span
+                        :class="[
+                          'inline-flex px-2 py-1 text-xs font-semibold rounded-full',
+                          order.status === 'COMPLETED'
+                            ? 'bg-green-100 text-green-800'
+                            : order.status === 'PENDING'
+                              ? 'bg-yellow-100 text-yellow-800'
+                              : order.status === 'SHIPPED'
+                                ? 'bg-blue-100 text-blue-800'
+                                : order.status === 'PAID'
+                                  ? 'bg-purple-100 text-purple-800'
+                                  : 'bg-red-100 text-red-800',
+                        ]"
+                      >
                         {{ order.status }}
                       </span>
                     </td>
@@ -254,8 +343,13 @@
     </main>
 
     <!-- Product Form Modal -->
-    <div v-if="showProductForm" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-      <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white">
+    <div
+      v-if="showProductForm"
+      class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50"
+    >
+      <div
+        class="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white"
+      >
         <div class="mt-3">
           <h3 class="text-lg font-medium text-gray-900 mb-4">
             {{ editingProduct ? 'Edit Product' : 'Add New Product' }}
@@ -268,7 +362,7 @@
                 type="text"
                 required
                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              >
+              />
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700">Price</label>
@@ -279,7 +373,7 @@
                 step="0.01"
                 required
                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              >
+              />
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700">Stock</label>
@@ -289,7 +383,7 @@
                 min="0"
                 required
                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              >
+              />
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700">Short Description</label>
@@ -305,7 +399,7 @@
                 v-model="productForm.imageUrl"
                 type="url"
                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              >
+              />
             </div>
             <div class="flex justify-end space-x-3 pt-4">
               <button
@@ -352,7 +446,7 @@ const editingProduct = ref(null)
 const tabs = [
   { id: 'users', name: 'Users' },
   { id: 'products', name: 'Products' },
-  { id: 'orders', name: 'Orders' }
+  { id: 'orders', name: 'Orders' },
 ]
 
 // Product form
@@ -362,7 +456,7 @@ const productForm = reactive({
   inStock: 0,
   shortDescription: '',
   imageUrl: '',
-  categoryId: 1 // Default category
+  categoryId: 1, // Default category
 })
 
 // Methods
@@ -423,7 +517,7 @@ const updateUserStatus = async (userId, status) => {
   try {
     await adminApi.updateUserStatus(userId, { status })
     // Update local state
-    const user = users.value.find(u => u.id === userId)
+    const user = users.value.find((u) => u.id === userId)
     if (user) {
       user.status = status
     }
@@ -443,7 +537,7 @@ const saveProduct = async () => {
     if (editingProduct.value) {
       // Update existing product
       await adminApi.updateProduct(editingProduct.value.id, productForm)
-      const index = products.value.findIndex(p => p.id === editingProduct.value.id)
+      const index = products.value.findIndex((p) => p.id === editingProduct.value.id)
       if (index !== -1) {
         products.value[index] = { ...editingProduct.value, ...productForm }
       }
@@ -465,7 +559,7 @@ const deleteProduct = async (productId) => {
   if (confirm('Are you sure you want to delete this product?')) {
     try {
       await adminApi.deleteProduct(productId)
-      products.value = products.value.filter(p => p.id !== productId)
+      products.value = products.value.filter((p) => p.id !== productId)
     } catch (error) {
       console.error('Failed to delete product:', error)
     }
@@ -476,7 +570,7 @@ const updateOrderStatus = async (orderId, status) => {
   try {
     await adminApi.updateOrderStatus(orderId, { status })
     // Update local state
-    const order = orders.value.find(o => o.id === orderId)
+    const order = orders.value.find((o) => o.id === orderId)
     if (order) {
       order.status = status
     }
@@ -489,7 +583,7 @@ const deleteOrder = async (orderId) => {
   if (confirm('Are you sure you want to delete this order?')) {
     try {
       await adminApi.deleteOrder(orderId)
-      orders.value = orders.value.filter(o => o.id !== orderId)
+      orders.value = orders.value.filter((o) => o.id !== orderId)
     } catch (error) {
       console.error('Failed to delete order:', error)
     }
@@ -503,7 +597,7 @@ const resetProductForm = () => {
     inStock: 0,
     shortDescription: '',
     imageUrl: '',
-    categoryId: 1
+    categoryId: 1,
   })
   editingProduct.value = null
 }
