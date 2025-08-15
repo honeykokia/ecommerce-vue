@@ -278,3 +278,14 @@ export const adminApi = {
     })
   },
 }
+
+// Payment APIs
+export const paymentApi = {
+  // Process payment checkout
+  async checkout(paymentData) {
+    return apiRequest('/payments/checkout', {
+      method: 'POST',
+      body: JSON.stringify(paymentData),
+    })
+  },
+}
