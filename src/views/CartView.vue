@@ -50,9 +50,8 @@ const clearCart = async () => {
 }
 
 const proceedToCheckout = () => {
-  // Navigate to checkout page (to be implemented)
-  // For now, just show an alert
-  alert('結帳功能開發中...')
+  // Navigate to payment page
+  router.push('/payment')
 }
 
 const goToProducts = () => {

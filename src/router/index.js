@@ -86,6 +86,18 @@ const router = createRouter({
       beforeEnter: requireAuth,
     },
     {
+      path: '/payment',
+      name: 'payment',
+      component: () => import('../views/PaymentView.vue'),
+      beforeEnter: requireAuth,
+    },
+    {
+      path: '/payment-result',
+      name: 'payment-result',
+      component: () => import('../views/PaymentResultView.vue'),
+      beforeEnter: requireAuth,
+    },
+    {
       path: '/admin',
       name: 'admin',
       component: () => import('../views/AdminView.vue'),
