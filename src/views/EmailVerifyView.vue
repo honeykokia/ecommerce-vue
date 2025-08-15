@@ -1,21 +1,20 @@
 <script setup>
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
-import { useUserStore } from '../stores/user.js'
 import { userApi } from '../services/api.js'
 
 const router = useRouter()
-const userStore = useUserStore()
 
 // Form data
 const formData = reactive({
   email: '',
-  password: '',
 })
 
 // Form validation and state
 const errors = ref({})
 const isSubmitting = ref(false)
+const isSuccess = ref(false)
+const successMessage = ref('')
 
 // Validate form
 function validateForm() {
@@ -25,12 +24,6 @@ function validateForm() {
     newErrors.email = 'Email is required'
   } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
     newErrors.email = 'Please enter a valid email address'
-  }
-
-  if (!formData.password) {
-    newErrors.password = 'Password is required'
-  } else if (formData.password.length < 6) {
-    newErrors.password = 'Password must be at least 6 characters long'
   }
 
   errors.value = newErrors
@@ -44,27 +37,36 @@ async function handleSubmit() {
   }
 
   isSubmitting.value = true
-  userStore.clearError()
+  errors.value = {}
 
   try {
-    const response = await userApi.login({
+    const response = await userApi.resendVerificationEmail({
       email: formData.email,
-      password: formData.password,
     })
 
-    if (response.data.user) {
-      // userStore.setUser(response.data.user)
-      userStore.setToken(response.data.user.token)
-      router.push('/profile')
+    if (response.data) {
+      isSuccess.value = true
+      successMessage.value = 'Verification email sent successfully! Please check your inbox.'
+      formData.email = ''
     } else {
       // Handle validation errors from the API
-      for (const [field, message] of Object.entries(response.data.errors)) {
-        errors.value[field] = message
+      if (response.data?.errors) {
+        for (const [field, message] of Object.entries(response.data.errors)) {
+          errors.value[field] = message
+        }
+      } else {
+        errors.value.general = 'Failed to send verification email. Please try again.'
       }
-      return
     }
   } catch (error) {
-    userStore.setError(error.message || 'Login failed. Please check your credentials.')
+    if (error.response?.status === 400 && error.response?.data?.errors) {
+      // Handle validation errors from the API
+      for (const [field, message] of Object.entries(error.response.data.errors)) {
+        errors.value[field] = message
+      }
+    } else {
+      errors.value.general = error.message || 'Failed to send verification email. Please try again.'
+    }
   } finally {
     isSubmitting.value = false
   }
@@ -75,6 +77,14 @@ function clearFieldError(field) {
   if (errors.value[field]) {
     delete errors.value[field]
   }
+  if (isSuccess.value) {
+    isSuccess.value = false
+    successMessage.value = ''
+  }
+}
+
+function goToLogin() {
+  router.push('/login')
 }
 </script>
 
@@ -83,21 +93,34 @@ function clearFieldError(field) {
     <div class="max-w-md w-full space-y-8">
       <div>
         <div class="mx-auto h-12 w-12 flex items-center justify-center rounded-full bg-blue-100">
-          <i class="fas fa-user text-blue-600 text-xl"></i>
+          <i class="fas fa-envelope text-blue-600 text-xl"></i>
         </div>
-        <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">Welcome Back</h2>
-        <p class="mt-2 text-center text-sm text-gray-600">Sign in to your account</p>
+        <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">Email Verification</h2>
+        <p class="mt-2 text-center text-sm text-gray-600">
+          Enter your email address and we'll send you a new verification link
+        </p>
       </div>
 
       <form @submit.prevent="handleSubmit" class="mt-8 space-y-6">
         <!-- Display general error -->
         <div
-          v-if="userStore.error"
+          v-if="errors.general"
           class="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md text-sm"
         >
           <div class="flex">
             <i class="fas fa-exclamation-circle mt-0.5 mr-2"></i>
-            <span>{{ userStore.error }}</span>
+            <span>{{ errors.general }}</span>
+          </div>
+        </div>
+
+        <!-- Display success message -->
+        <div
+          v-if="isSuccess"
+          class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-md text-sm"
+        >
+          <div class="flex">
+            <i class="fas fa-check-circle mt-0.5 mr-2"></i>
+            <span>{{ successMessage }}</span>
           </div>
         </div>
 
@@ -122,36 +145,10 @@ function clearFieldError(field) {
                   'appearance-none relative block w-full pl-10 px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm transition duration-200',
                   errors.email ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : '',
                 ]"
-                placeholder="Enter your email"
+                placeholder="Enter your email address"
               />
             </div>
             <p v-if="errors.email" class="mt-1 text-sm text-red-600">{{ errors.email }}</p>
-          </div>
-
-          <!-- Password field -->
-          <div>
-            <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
-              Password
-            </label>
-            <div class="relative">
-              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <i class="fas fa-lock text-gray-400"></i>
-              </div>
-              <input
-                id="password"
-                v-model="formData.password"
-                @input="clearFieldError('password')"
-                type="password"
-                autocomplete="current-password"
-                required
-                :class="[
-                  'appearance-none relative block w-full pl-10 px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm transition duration-200',
-                  errors.password ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : '',
-                ]"
-                placeholder="Enter your password"
-              />
-            </div>
-            <p v-if="errors.password" class="mt-1 text-sm text-red-600">{{ errors.password }}</p>
           </div>
         </div>
 
@@ -189,32 +186,24 @@ function clearFieldError(field) {
                 ></path>
               </svg>
             </span>
-            {{ isSubmitting ? 'Signing in...' : 'Sign In' }}
+            <span v-else class="absolute left-0 inset-y-0 flex items-center pl-3">
+              <i class="fas fa-paper-plane text-blue-500 group-hover:text-blue-400"></i>
+            </span>
+            {{ isSubmitting ? 'Sending...' : 'Send Verification Email' }}
           </button>
         </div>
 
-        <!-- Forgot password link -->
+        <!-- Back to login link -->
         <div class="text-center">
           <p class="text-sm text-gray-600">
-            <RouterLink
-              to="/forgot-password"
-              class="font-medium text-blue-600 hover:text-blue-500 transition duration-200"
+            Already verified?
+            <button
+              type="button"
+              @click="goToLogin"
+              class="font-medium text-blue-600 hover:text-blue-500 transition duration-200 underline"
             >
-              Forgot your password?
-            </RouterLink>
-          </p>
-        </div>
-
-        <!-- Register link -->
-        <div class="text-center">
-          <p class="text-sm text-gray-600">
-            Don't have an account?
-            <RouterLink
-              to="/register"
-              class="font-medium text-blue-600 hover:text-blue-500 transition duration-200"
-            >
-              Create account
-            </RouterLink>
+              Sign in to your account
+            </button>
           </p>
         </div>
       </form>

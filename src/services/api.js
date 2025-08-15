@@ -1,12 +1,12 @@
-import { useUserStore } from "@/stores/user"
-import router from "@/router"
+import { useUserStore } from '@/stores/user'
+import router from '@/router'
 
 // Base API configuration
 const API_BASE_URL = 'http://localhost:8080'
 
 // Helper function to make API requests
 async function apiRequest(url, options = {}) {
-  const userStore = useUserStore();
+  const userStore = useUserStore()
   const config = {
     headers: {
       ...options.headers,
@@ -32,6 +32,16 @@ async function apiRequest(url, options = {}) {
     if (response.status === 401) {
       userStore.logout()
       router.push('/login')
+    }
+
+    // For non-2xx status codes, throw error with response data
+    if (!response.ok) {
+      const error = new Error(`HTTP ${response.status}`)
+      error.response = {
+        status: response.status,
+        data: result,
+      }
+      throw error
     }
 
     return result
@@ -109,6 +119,14 @@ export const userApi = {
     return apiRequest('/users/reset-password', {
       method: 'POST',
       body: JSON.stringify(resetData),
+    })
+  },
+
+  // Resend verification email
+  async resendVerificationEmail(emailData) {
+    return apiRequest('/users/verify/resend', {
+      method: 'POST',
+      body: JSON.stringify(emailData),
     })
   },
 }

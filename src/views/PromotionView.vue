@@ -11,7 +11,7 @@ const error = ref('')
 async function loadPromotions() {
   isLoading.value = true
   error.value = ''
-  
+
   try {
     const response = await promotionApi.getPromotions()
     if (response.data && response.data.promotions) {
@@ -30,7 +30,7 @@ function formatDate(dateString) {
   return new Date(dateString).toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',
-    day: 'numeric'
+    day: 'numeric',
   })
 }
 
@@ -64,9 +64,7 @@ onMounted(() => {
       <!-- Header -->
       <div class="mb-8">
         <h1 class="text-3xl font-bold text-gray-900">Current Promotions</h1>
-        <p class="mt-2 text-gray-600">
-          Discover our latest deals and special offers
-        </p>
+        <p class="mt-2 text-gray-600">Discover our latest deals and special offers</p>
       </div>
 
       <!-- Loading state -->
@@ -80,7 +78,7 @@ onMounted(() => {
         <i class="fas fa-exclamation-triangle text-red-500 text-4xl mb-4"></i>
         <h3 class="text-lg font-medium text-gray-900 mb-2">Error Loading Promotions</h3>
         <p class="text-gray-600 mb-4">{{ error }}</p>
-        <button 
+        <button
           @click="loadPromotions"
           class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition duration-200"
         >
@@ -90,7 +88,10 @@ onMounted(() => {
       </div>
 
       <!-- Empty state -->
-      <div v-else-if="promotions.length === 0" class="bg-white rounded-lg shadow-sm p-8 text-center">
+      <div
+        v-else-if="promotions.length === 0"
+        class="bg-white rounded-lg shadow-sm p-8 text-center"
+      >
         <i class="fas fa-percentage text-gray-300 text-4xl mb-4"></i>
         <h3 class="text-lg font-medium text-gray-900 mb-2">No Active Promotions</h3>
         <p class="text-gray-600 mb-4">There are currently no active promotions available</p>
@@ -120,25 +121,25 @@ onMounted(() => {
             />
             <div class="absolute inset-0 bg-black bg-opacity-20 flex items-center justify-center">
               <div class="text-center text-white">
-                <div 
+                <div
                   :class="[
                     'inline-flex items-center px-3 py-1 rounded-full text-sm font-medium mb-2',
-                    getDiscountTypeColor(promotion.discountType)
+                    getDiscountTypeColor(promotion.discountType),
                   ]"
                 >
                   {{ formatDiscount(promotion) }}
                 </div>
               </div>
             </div>
-            
+
             <!-- Active status badge -->
             <div class="absolute top-4 right-4">
-              <span 
+              <span
                 :class="[
                   'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
-                  isPromotionActive(promotion) 
-                    ? 'bg-green-100 text-green-800' 
-                    : 'bg-gray-100 text-gray-800'
+                  isPromotionActive(promotion)
+                    ? 'bg-green-100 text-green-800'
+                    : 'bg-gray-100 text-gray-800',
                 ]"
               >
                 {{ isPromotionActive(promotion) ? 'Active' : 'Inactive' }}
@@ -151,7 +152,7 @@ onMounted(() => {
             <h3 class="text-xl font-bold text-gray-900 mb-2">
               {{ promotion.name }}
             </h3>
-            
+
             <p class="text-gray-600 mb-4 line-clamp-3">
               {{ promotion.description }}
             </p>
@@ -160,12 +161,18 @@ onMounted(() => {
             <div class="space-y-2 mb-4">
               <div class="flex items-center text-sm text-gray-500">
                 <i class="fas fa-calendar-alt mr-2"></i>
-                <span>{{ formatDate(promotion.startDate) }} - {{ formatDate(promotion.endDate) }}</span>
+                <span
+                  >{{ formatDate(promotion.startDate) }} - {{ formatDate(promotion.endDate) }}</span
+                >
               </div>
-              
+
               <div class="flex items-center text-sm text-gray-500">
                 <i class="fas fa-tag mr-2"></i>
-                <span>{{ promotion.discountType === 'PERCENTAGE' ? 'Percentage Discount' : 'Fixed Amount Discount' }}</span>
+                <span>{{
+                  promotion.discountType === 'PERCENTAGE'
+                    ? 'Percentage Discount'
+                    : 'Fixed Amount Discount'
+                }}</span>
               </div>
             </div>
 
@@ -174,14 +181,14 @@ onMounted(() => {
               <div class="text-2xl font-bold text-blue-600">
                 {{ formatDiscount(promotion) }}
               </div>
-              
+
               <RouterLink
                 to="/products"
                 :class="[
                   'inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg transition duration-200',
                   isPromotionActive(promotion)
                     ? 'text-white bg-blue-600 hover:bg-blue-700'
-                    : 'text-gray-500 bg-gray-100 cursor-not-allowed'
+                    : 'text-gray-500 bg-gray-100 cursor-not-allowed',
                 ]"
                 :disabled="!isPromotionActive(promotion)"
               >
