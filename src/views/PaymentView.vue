@@ -3,11 +3,13 @@ import { ref, reactive, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useCartStore } from '../stores/cart.js'
 import { useUserStore } from '../stores/user.js'
+import { useProductStore } from '../stores/product.js'
 import { orderApi } from '../services/api.js'
 
 const router = useRouter()
 const cartStore = useCartStore()
 const userStore = useUserStore()
+const productStore = useProductStore()
 
 // Form data based on CreateOrderRequest schema
 const formData = reactive({
@@ -54,6 +56,11 @@ const formatPrice = (price) => {
   }).format(price)
 }
 
+// Get product by id helper
+const getProduct = (productId) => {
+  return productStore.getProductById(productId)
+}
+
 // Validate form
 function validateForm() {
   const newErrors = {}
@@ -82,7 +89,7 @@ async function handleSubmit() {
     return
   }
 
-  if (cartStore.items.length === 0) {
+  if (cartStore.cartItems.length === 0) {
     errors.value.general = '購物車為空，無法建立訂單'
     return
   }
@@ -94,7 +101,7 @@ async function handleSubmit() {
     // Create order with form data
     const response = await orderApi.createOrder({
       ...formData,
-      tradeDesc: formData.tradeDesc || `訂單 - ${cartStore.items.length} 項商品`,
+      tradeDesc: formData.tradeDesc || `訂單 - ${cartStore.cartItems.length} 項商品`,
     })
 
     if (response.data?.order) {
@@ -130,9 +137,9 @@ onMounted(async () => {
   }
 
   try {
-    await cartStore.fetchCart()
+    await Promise.all([cartStore.fetchCart(), productStore.fetchProducts()])
 
-    if (cartStore.items.length === 0) {
+    if (cartStore.cartItems.length === 0) {
       router.push('/cart')
       return
     }
@@ -258,7 +265,7 @@ onMounted(async () => {
             <!-- Submit Button -->
             <button
               type="submit"
-              :disabled="isSubmitting || cartStore.items.length === 0"
+              :disabled="isSubmitting || cartStore.cartItems.length === 0"
               class="w-full bg-green-600 text-white py-3 px-4 rounded-md font-medium hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               <span v-if="isSubmitting">處理中...</span>
@@ -274,16 +281,18 @@ onMounted(async () => {
           <!-- Cart Items -->
           <div class="space-y-4 mb-6">
             <div
-              v-for="item in cartStore.items"
+              v-for="item in cartStore.cartItems"
               :key="item.id"
               class="flex justify-between items-center"
             >
               <div class="flex-1">
-                <h4 class="text-sm font-medium text-gray-900">{{ item.name }}</h4>
+                <h4 class="text-sm font-medium text-gray-900">
+                  {{ getProduct(item.productId)?.name || `商品 #${item.productId}` }}
+                </h4>
                 <p class="text-sm text-gray-500">數量: {{ item.quantity }}</p>
               </div>
               <span class="text-sm font-medium text-gray-900">
-                {{ formatPrice(item.price * item.quantity) }}
+                {{ formatPrice(item.unitPrice * item.quantity) }}
               </span>
             </div>
           </div>
