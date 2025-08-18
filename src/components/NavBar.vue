@@ -66,7 +66,7 @@ function handleLogout() {
           class="bg-blue-100 border-2 border-blue-200 p-2 rounded-xl text-blue-700 hover:text-blue-800 hover:bg-blue-200 transition duration-200 flex items-center space-x-2"
         >
           <i class="fa-solid fa-user text-xl"></i>
-          <span class="hidden md:inline">{{ userStore.userName || 'User' }}</span>
+          <span class="hidden md:inline">{{ userStore.userEmail || 'User' }}</span>
           <i class="fa-solid fa-chevron-down text-sm"></i>
         </button>
 

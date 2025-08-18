@@ -51,19 +51,16 @@ async function handleSubmit() {
       email: formData.email,
       password: formData.password,
     })
-
+    
     if (response.data.user) {
       // userStore.setUser(response.data.user)
       userStore.setToken(response.data.user.token)
       router.push('/profile')
-    } else {
-      // Handle validation errors from the API
-      for (const [field, message] of Object.entries(response.data.errors)) {
-        errors.value[field] = message
-      }
-      return
     }
   } catch (error) {
+    for (const [field, message] of Object.entries(error)) {
+        errors.value[field] = message
+      }
     userStore.setError(error.message || 'Login failed. Please check your credentials.')
   } finally {
     isSubmitting.value = false

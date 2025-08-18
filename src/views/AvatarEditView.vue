@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import { useUserStore } from '../stores/user.js'
 import { userApi } from '../services/api.js'
 
+const api = import.meta.env.VITE_API_URL
 const router = useRouter()
 const userStore = useUserStore()
 
@@ -11,7 +12,7 @@ const userStore = useUserStore()
 const isLoading = ref(false)
 const isSaving = ref(false)
 const profile = reactive({
-  image: '/upload/defaultAvater.jpg',
+  image: '/upload/defaultAvatar.png',
 })
 
 // File upload state
@@ -25,7 +26,7 @@ async function loadProfile() {
   try {
     const response = await userApi.getProfile()
     if (response.data && response.data.user) {
-      profile.image = response.data.user.image || '/upload/defaultAvater.jpg'
+      profile.image = `${api}${response.data.user.image || '/upload/defaultAvatar.png'}`
     }
   } catch (error) {
     userStore.setError(error.message || 'Failed to load profile')
@@ -76,7 +77,7 @@ async function uploadAvatar() {
   try {
     // Create FormData for file upload
     const formData = new FormData()
-    formData.append('avatar', selectedFile.value)
+    formData.append('file', selectedFile.value)
 
     const response = await userApi.updateAvatar(formData)
 

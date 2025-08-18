@@ -3,13 +3,14 @@ import { ref, reactive, onMounted } from 'vue'
 import { useUserStore } from '../stores/user.js'
 import { userApi } from '../services/api.js'
 
+const api = import.meta.env.VITE_API_URL;
 const userStore = useUserStore()
 
 // Profile data
 const profile = reactive({
   email: '',
   name: '',
-  image: '/upload/defaultAvater.jpg',
+  image: '/upload/defaultAvatar.png',
   gender: 1,
   birthday: '',
   phone: '',
@@ -30,12 +31,13 @@ async function loadProfile() {
   isLoading.value = true
   try {
     const response = await userApi.getProfile()
+
     if (response.data && response.data.user) {
       Object.assign(profile, response.data.user)
       originalProfile.value = { ...profile }
     }
   } catch (error) {
-    userStore.setError(error.message || 'Failed to load profile')
+    userStore.setError(Object.value|| 'Failed to load profile')
   } finally {
     isLoading.value = false
   }
@@ -98,7 +100,8 @@ async function saveProfile() {
     // Show success message (you might want to add a toast notification here)
     console.log('Profile updated successfully')
   } catch (error) {
-    userStore.setError(error.message || 'Failed to update profile')
+    console.log(error)
+    userStore.setError(Object.values(error).join('<br>') || 'Failed to update profile')
   } finally {
     isSaving.value = false
   }
@@ -163,7 +166,7 @@ onMounted(() => {
       >
         <div class="flex">
           <i class="fas fa-exclamation-circle mt-0.5 mr-2"></i>
-          <span>{{ userStore.error }}</span>
+          <span v-html="userStore.error"></span>
         </div>
       </div>
 
@@ -175,7 +178,7 @@ onMounted(() => {
             <div class="lg:col-span-2 flex items-center space-x-6">
               <div class="shrink-0">
                 <img
-                  :src="profile.image"
+                  :src="`${api}${profile.image}`"
                   :alt="profile.name || 'Profile'"
                   class="h-20 w-20 rounded-full object-cover border-4 border-gray-200"
                 />
