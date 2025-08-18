@@ -3,6 +3,7 @@ import { onMounted, ref, watch } from 'vue'
 import { useProductStore } from '../stores/product.js'
 import ProductCard from '../components/ProductCard.vue'
 
+const api = import.meta.env.VITE_API_URL
 const productStore = useProductStore()
 
 const isGridView = ref(true)
@@ -263,7 +264,7 @@ const clearFilters = () => {
           <div class="flex flex-col md:flex-row gap-6">
             <div class="flex-shrink-0">
               <img
-                :src="product.imageUrl || '/upload/defaultProduct.jpg'"
+                :src="`${api}${product.imageURL || '/upload/defaultProduct.jpg'}`"
                 :alt="product.name"
                 class="w-full md:w-48 h-48 object-cover rounded-lg"
               />

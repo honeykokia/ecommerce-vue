@@ -5,6 +5,7 @@ export const useUserStore = defineStore('user', () => {
   // State
   const user = ref(null)
   const token = ref(localStorage.getItem('token') || null)
+  const role = ref(null)
   const isLoading = ref(false)
   const error = ref(null)
 
@@ -55,6 +56,7 @@ export const useUserStore = defineStore('user', () => {
     // State
     user,
     token,
+    role,
     isLoading,
     error,
     // Getters

@@ -3,6 +3,7 @@ import { ref, computed } from 'vue'
 import { useCartStore } from '../stores/cart.js'
 import { useProductStore } from '../stores/product.js'
 
+const api = import.meta.env.VITE_API_URL
 const props = defineProps({
   cartItem: {
     type: Object,
@@ -83,7 +84,7 @@ const onQuantityInputChange = () => {
       <!-- Product Image -->
       <div class="flex-shrink-0">
         <img
-          :src="product?.imageUrl || '/upload/defaultProduct.jpg'"
+          :src="`${api}${product?.imageURL}`"
           :alt="product?.name || 'Product'"
           class="w-20 h-20 md:w-24 md:h-24 object-cover rounded-lg"
         />

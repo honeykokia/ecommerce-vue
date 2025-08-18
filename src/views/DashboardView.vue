@@ -65,7 +65,7 @@ const quickActions = [
     title: 'Shopping Cart',
     description: 'View items in your cart',
     icon: 'fas fa-shopping-cart',
-    color: 'orange',
+    color: 'gray',
     action: () => router.push('/cart'),
   },
 ]
@@ -151,6 +151,9 @@ async function changePassword() {
     // Show success message (you might want to add a toast notification here)
     alert('Password changed successfully!')
   } catch (error) {
+      for (const [field, message] of Object.entries(error)) {
+        passwordErrors.value[field] = message
+      }
     userStore.setError(error.message || 'Failed to change password')
   } finally {
     isChangingPassword.value = false
@@ -272,7 +275,7 @@ onMounted(() => {
               @click="action.action"
               :class="[
                 'p-4 rounded-lg border-2 border-dashed border-gray-200 hover:border-gray-300 transition duration-200 text-left group',
-                `hover:bg-${action.color}-50`,
+                `hover:bg-blue-50`,
               ]"
             >
               <div

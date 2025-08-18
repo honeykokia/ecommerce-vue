@@ -2,7 +2,7 @@ import { useUserStore } from '@/stores/user'
 import router from '@/router'
 
 // Base API configuration
-const API_BASE_URL = 'http://localhost:8080'
+const API_BASE_URL = import.meta.env.VITE_API_URL
 
 // Helper function to make API requests
 async function apiRequest(url, options = {}) {
@@ -27,22 +27,33 @@ async function apiRequest(url, options = {}) {
 
   try {
     const response = await fetch(`${API_BASE_URL}${url}`, config)
-    const result = await response.json()
+    let result;
+    try {
+      result = await response.json();
+    } catch (e) {
+      result = null; // 不是 JSON，就設成 null
+    }
 
     if (response.status === 401) {
       userStore.logout()
       router.push('/login')
     }
 
-    // For non-2xx status codes, throw error with response data
     if (!response.ok) {
-      const error = new Error(`HTTP ${response.status}`)
-      error.response = {
-        status: response.status,
-        data: result,
-      }
-      throw error
+      throw (result?.data?.errors)
+      ?? result
+      ?? { message: 'Connection error' };
     }
+
+    // For non-2xx status codes, throw error with response data
+    // if (!response.ok) {
+    //   const error = new Error(`HTTP ${response.status}`)
+    //   error.response = {
+    //     status: response.status,
+    //     data: result,
+    //   }
+    //   throw error
+    // }
 
     return result
   } catch (error) {

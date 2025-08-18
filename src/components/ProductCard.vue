@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import { useCartStore } from '../stores/cart.js'
 import { useProductStore } from '../stores/product.js'
 
+const api = import.meta.env.VITE_API_URL
 const props = defineProps({
   product: {
     type: Object,
@@ -54,9 +55,9 @@ const getStockStatus = () => {
     class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
   >
     <!-- Product Image -->
-    <div class="relative aspect-square overflow-hidden">
+    <div class="relative aspect-square overflow-hidden p-4">
       <img
-        :src="product.imageUrl || '/upload/defaultProduct.jpg'"
+        :src="`${api}${product.imageURL}`"
         :alt="product.name"
         class="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
       />

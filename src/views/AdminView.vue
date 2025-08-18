@@ -72,6 +72,11 @@
                     >
                       Email
                     </th>
+                                        <th
+                      class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                      ROLE
+                    </th>
                     <th
                       class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                     >
@@ -109,6 +114,20 @@
                       <span
                         :class="[
                           'inline-flex px-2 py-1 text-xs font-semibold rounded-full',
+                          user.role === 'USER'
+                            ? 'bg-green-100 text-green-800'
+                            : user.role === 'ADMIN'
+                              ? 'bg-yellow-100 text-yellow-800'
+                              : 'bg-red-100 text-red-800',
+                        ]"
+                      >
+                        {{ user.role || 'None' }}
+                      </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                      <span
+                        :class="[
+                          'inline-flex px-2 py-1 text-xs font-semibold rounded-full',
                           user.status === 'ACTIVE'
                             ? 'bg-green-100 text-green-800'
                             : user.status === 'INACTIVE'
@@ -121,8 +140,8 @@
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <select
-                        @change="updateUserStatus(user.id, $event.target.value)"
-                        :value="user.status || 'ACTIVE'"
+                        v-model="user.status"
+                        @change="updateUserStatus(user.id, user.status)"
                         class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
                       >
                         <option value="ACTIVE">Active</option>
@@ -144,10 +163,7 @@
           <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
             <h2 class="text-lg font-medium text-gray-900">Product Management</h2>
             <button
-              @click="
-                showProductForm = true
-                editingProduct = null
-              "
+              @click="showProductForm = true; editingProduct = null"
               class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
             >
               Add Product
