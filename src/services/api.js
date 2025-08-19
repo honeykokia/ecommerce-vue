@@ -288,6 +288,56 @@ export const adminApi = {
       method: 'DELETE',
     })
   },
+
+  // Category management
+  async createCategory(categoryData) {
+    return apiRequest('/admin/categories', {
+      method: 'POST',
+      body: JSON.stringify(categoryData),
+    })
+  },
+
+  async getCategories() {
+    return apiRequest('/admin/categories')
+  },
+
+  async updateCategory(categoryId, categoryData) {
+    return apiRequest(`/admin/categories/${categoryId}`, {
+      method: 'PUT',
+      body: JSON.stringify(categoryData),
+    })
+  },
+
+  async deleteCategory(categoryId) {
+    return apiRequest(`/admin/categories/${categoryId}`, {
+      method: 'DELETE',
+    })
+  },
+
+  // Promotion management
+  async createPromotion(promotionData) {
+    return apiRequest('/admin/promotions', {
+      method: 'POST',
+      body: JSON.stringify(promotionData),
+    })
+  },
+
+  async getPromotions() {
+    return apiRequest('/admin/promotions')
+  },
+
+  async updatePromotion(promotionId, promotionData) {
+    return apiRequest(`/admin/promotions/${promotionId}`, {
+      method: 'PUT',
+      body: JSON.stringify(promotionData),
+    })
+  },
+
+  async deletePromotion(promotionId) {
+    return apiRequest(`/admin/promotions/${promotionId}`, {
+      method: 'DELETE',
+    })
+  },
 }
 
 // Payment APIs

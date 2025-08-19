@@ -200,6 +200,11 @@
                     <th
                       class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                     >
+                      Category
+                    </th>
+                    <th
+                      class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
                       Actions
                     </th>
                   </tr>
@@ -225,6 +230,9 @@
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {{ product.inStock }}
                     </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {{ categories.find(c => c.id === product.categoryId)?.name || 'N/A' }}
+                    </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
                       <button
                         @click="editProduct(product)"
@@ -234,6 +242,184 @@
                       </button>
                       <button
                         @click="deleteProduct(product.id)"
+                        class="text-red-600 hover:text-red-900"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Categories Management -->
+      <div v-if="activeTab === 'categories'" class="space-y-6">
+        <div class="bg-white shadow rounded-lg">
+          <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+            <h2 class="text-lg font-medium text-gray-900">Category Management</h2>
+            <button
+              @click="showCategoryForm = true; editingCategory = null"
+              class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+            >
+              Add Category
+            </button>
+          </div>
+          <div class="px-6 py-4">
+            <div v-if="isLoading" class="text-center py-4">
+              <div
+                class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"
+              ></div>
+            </div>
+            <div v-else-if="categories.length === 0" class="text-center py-8 text-gray-500">
+              No categories found
+            </div>
+            <div v-else class="overflow-x-auto">
+              <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                  <tr>
+                    <th
+                      class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                      Name
+                    </th>
+                    <th
+                      class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                      Description
+                    </th>
+                    <th
+                      class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                  <tr v-for="category in categories" :key="category.id">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      {{ category.name }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {{ category.description }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                      <button
+                        @click="editCategory(category)"
+                        class="text-blue-600 hover:text-blue-900"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        @click="deleteCategory(category.id)"
+                        class="text-red-600 hover:text-red-900"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Promotions Management -->
+      <div v-if="activeTab === 'promotions'" class="space-y-6">
+        <div class="bg-white shadow rounded-lg">
+          <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+            <h2 class="text-lg font-medium text-gray-900">Promotion Management</h2>
+            <button
+              @click="showPromotionForm = true; editingPromotion = null"
+              class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+            >
+              Add Promotion
+            </button>
+          </div>
+          <div class="px-6 py-4">
+            <div v-if="isLoading" class="text-center py-4">
+              <div
+                class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"
+              ></div>
+            </div>
+            <div v-else-if="promotions.length === 0" class="text-center py-8 text-gray-500">
+              No promotions found
+            </div>
+            <div v-else class="overflow-x-auto">
+              <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                  <tr>
+                    <th
+                      class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                      Name
+                    </th>
+                    <th
+                      class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                      Discount
+                    </th>
+                    <th
+                      class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                      Start Date
+                    </th>
+                    <th
+                      class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                      End Date
+                    </th>
+                    <th
+                      class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                      Status
+                    </th>
+                    <th
+                      class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                  <tr v-for="promotion in promotions" :key="promotion.id">
+                    <td class="px-6 py-4 whitespace-nowrap">
+                      <div class="text-sm font-medium text-gray-900">{{ promotion.name }}</div>
+                      <div class="text-sm text-gray-500">{{ promotion.description }}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {{ promotion.discountPercentage }}%
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {{ formatDate(promotion.startDate) }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {{ formatDate(promotion.endDate) }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                      <span
+                        :class="[
+                          'inline-flex px-2 py-1 text-xs font-semibold rounded-full',
+                          promotion.isActive
+                            ? 'bg-green-100 text-green-800'
+                            : 'bg-red-100 text-red-800',
+                        ]"
+                      >
+                        {{ promotion.isActive ? 'Active' : 'Inactive' }}
+                      </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                      <button
+                        @click="editPromotion(promotion)"
+                        class="text-blue-600 hover:text-blue-900"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        @click="deletePromotion(promotion.id)"
                         class="text-red-600 hover:text-red-900"
                       >
                         Delete
@@ -417,6 +603,30 @@
                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               />
             </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Category</label>
+              <select
+                v-model="productForm.categoryId"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              >
+                <option value="">Select a category</option>
+                <option v-for="category in categories" :key="category.id" :value="category.id">
+                  {{ category.name }}
+                </option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Promotion (Optional)</label>
+              <select
+                v-model="productForm.promotionId"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              >
+                <option value="">No promotion</option>
+                <option v-for="promotion in promotions" :key="promotion.id" :value="promotion.id">
+                  {{ promotion.name }} ({{ promotion.discountPercentage }}% off)
+                </option>
+              </select>
+            </div>
             <div class="flex justify-end space-x-3 pt-4">
               <button
                 type="button"
@@ -430,6 +640,148 @@
                 class="px-4 py-2 bg-blue-600 border border-transparent rounded-md text-sm font-medium text-white hover:bg-blue-700"
               >
                 {{ editingProduct ? 'Update' : 'Create' }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Category Form Modal -->
+    <div
+      v-if="showCategoryForm"
+      class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50"
+    >
+      <div
+        class="relative top-20 mx-auto p-5 border w-11/12 md:w-1/2 lg:w-1/3 shadow-lg rounded-md bg-white"
+      >
+        <div class="mt-3">
+          <h3 class="text-lg font-medium text-gray-900 mb-4">
+            {{ editingCategory ? 'Edit Category' : 'Add New Category' }}
+          </h3>
+          <form @submit.prevent="saveCategory" class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Name</label>
+              <input
+                v-model="categoryForm.name"
+                type="text"
+                required
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Description</label>
+              <textarea
+                v-model="categoryForm.description"
+                rows="3"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              ></textarea>
+            </div>
+            <div class="flex justify-end space-x-3 pt-4">
+              <button
+                type="button"
+                @click="showCategoryForm = false"
+                class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                class="px-4 py-2 bg-blue-600 border border-transparent rounded-md text-sm font-medium text-white hover:bg-blue-700"
+              >
+                {{ editingCategory ? 'Update' : 'Create' }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Promotion Form Modal -->
+    <div
+      v-if="showPromotionForm"
+      class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50"
+    >
+      <div
+        class="relative top-20 mx-auto p-5 border w-11/12 md:w-2/3 lg:w-1/2 shadow-lg rounded-md bg-white"
+      >
+        <div class="mt-3">
+          <h3 class="text-lg font-medium text-gray-900 mb-4">
+            {{ editingPromotion ? 'Edit Promotion' : 'Add New Promotion' }}
+          </h3>
+          <form @submit.prevent="savePromotion" class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Name</label>
+              <input
+                v-model="promotionForm.name"
+                type="text"
+                required
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Description</label>
+              <textarea
+                v-model="promotionForm.description"
+                rows="3"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              ></textarea>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Discount Percentage</label>
+              <input
+                v-model.number="promotionForm.discountPercentage"
+                type="number"
+                min="0"
+                max="100"
+                step="0.01"
+                required
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              />
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700">Start Date</label>
+                <input
+                  v-model="promotionForm.startDate"
+                  type="date"
+                  required
+                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700">End Date</label>
+                <input
+                  v-model="promotionForm.endDate"
+                  type="date"
+                  required
+                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                />
+              </div>
+            </div>
+            <div>
+              <label class="flex items-center">
+                <input
+                  v-model="promotionForm.isActive"
+                  type="checkbox"
+                  class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                />
+                <span class="ml-2 text-sm text-gray-700">Active</span>
+              </label>
+            </div>
+            <div class="flex justify-end space-x-3 pt-4">
+              <button
+                type="button"
+                @click="showPromotionForm = false"
+                class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                class="px-4 py-2 bg-blue-600 border border-transparent rounded-md text-sm font-medium text-white hover:bg-blue-700"
+              >
+                {{ editingPromotion ? 'Update' : 'Create' }}
               </button>
             </div>
           </form>
@@ -454,14 +806,22 @@ const activeTab = ref('users')
 const isLoading = ref(false)
 const users = ref([])
 const products = ref([])
+const categories = ref([])
+const promotions = ref([])
 const orders = ref([])
 const showProductForm = ref(false)
+const showCategoryForm = ref(false)
+const showPromotionForm = ref(false)
 const editingProduct = ref(null)
+const editingCategory = ref(null)
+const editingPromotion = ref(null)
 
 // Tab configuration
 const tabs = [
   { id: 'users', name: 'Users' },
   { id: 'products', name: 'Products' },
+  { id: 'categories', name: 'Categories' },
+  { id: 'promotions', name: 'Promotions' },
   { id: 'orders', name: 'Orders' },
 ]
 
@@ -472,7 +832,24 @@ const productForm = reactive({
   inStock: 0,
   shortDescription: '',
   imageUrl: '',
-  categoryId: 1, // Default category
+  categoryId: null, 
+  promotionId: null,
+})
+
+// Category form
+const categoryForm = reactive({
+  name: '',
+  description: '',
+})
+
+// Promotion form
+const promotionForm = reactive({
+  name: '',
+  description: '',
+  discountPercentage: 0,
+  startDate: '',
+  endDate: '',
+  isActive: true,
 })
 
 // Methods
@@ -524,6 +901,38 @@ const loadOrders = async () => {
     console.error('Failed to load orders:', error)
     // Use mock data when API is not available
     orders.value = mockOrders
+  } finally {
+    isLoading.value = false
+  }
+}
+
+const loadCategories = async () => {
+  try {
+    isLoading.value = true
+    const response = await adminApi.getCategories()
+    if (response.data && response.data.categories) {
+      categories.value = response.data.categories
+    }
+  } catch (error) {
+    console.error('Failed to load categories:', error)
+    // Use mock data when API is not available
+    categories.value = []
+  } finally {
+    isLoading.value = false
+  }
+}
+
+const loadPromotions = async () => {
+  try {
+    isLoading.value = true
+    const response = await adminApi.getPromotions()
+    if (response.data && response.data.promotions) {
+      promotions.value = response.data.promotions
+    }
+  } catch (error) {
+    console.error('Failed to load promotions:', error)
+    // Use mock data when API is not available
+    promotions.value = []
   } finally {
     isLoading.value = false
   }
@@ -613,9 +1022,110 @@ const resetProductForm = () => {
     inStock: 0,
     shortDescription: '',
     imageUrl: '',
-    categoryId: 1,
+    categoryId: null,
+    promotionId: null,
   })
   editingProduct.value = null
+}
+
+const resetCategoryForm = () => {
+  Object.assign(categoryForm, {
+    name: '',
+    description: '',
+  })
+  editingCategory.value = null
+}
+
+const resetPromotionForm = () => {
+  Object.assign(promotionForm, {
+    name: '',
+    description: '',
+    discountPercentage: 0,
+    startDate: '',
+    endDate: '',
+    isActive: true,
+  })
+  editingPromotion.value = null
+}
+
+const editCategory = (category) => {
+  editingCategory.value = category
+  Object.assign(categoryForm, category)
+  showCategoryForm.value = true
+}
+
+const saveCategory = async () => {
+  try {
+    if (editingCategory.value) {
+      // Update existing category
+      await adminApi.updateCategory(editingCategory.value.id, categoryForm)
+      const index = categories.value.findIndex((c) => c.id === editingCategory.value.id)
+      if (index !== -1) {
+        categories.value[index] = { ...editingCategory.value, ...categoryForm }
+      }
+    } else {
+      // Create new category
+      const response = await adminApi.createCategory(categoryForm)
+      if (response.data && response.data.category) {
+        categories.value.push(response.data.category)
+      }
+    }
+    showCategoryForm.value = false
+    resetCategoryForm()
+  } catch (error) {
+    console.error('Failed to save category:', error)
+  }
+}
+
+const deleteCategory = async (categoryId) => {
+  if (confirm('Are you sure you want to delete this category?')) {
+    try {
+      await adminApi.deleteCategory(categoryId)
+      categories.value = categories.value.filter((c) => c.id !== categoryId)
+    } catch (error) {
+      console.error('Failed to delete category:', error)
+    }
+  }
+}
+
+const editPromotion = (promotion) => {
+  editingPromotion.value = promotion
+  Object.assign(promotionForm, promotion)
+  showPromotionForm.value = true
+}
+
+const savePromotion = async () => {
+  try {
+    if (editingPromotion.value) {
+      // Update existing promotion
+      await adminApi.updatePromotion(editingPromotion.value.id, promotionForm)
+      const index = promotions.value.findIndex((p) => p.id === editingPromotion.value.id)
+      if (index !== -1) {
+        promotions.value[index] = { ...editingPromotion.value, ...promotionForm }
+      }
+    } else {
+      // Create new promotion
+      const response = await adminApi.createPromotion(promotionForm)
+      if (response.data && response.data.promotion) {
+        promotions.value.push(response.data.promotion)
+      }
+    }
+    showPromotionForm.value = false
+    resetPromotionForm()
+  } catch (error) {
+    console.error('Failed to save promotion:', error)
+  }
+}
+
+const deletePromotion = async (promotionId) => {
+  if (confirm('Are you sure you want to delete this promotion?')) {
+    try {
+      await adminApi.deletePromotion(promotionId)
+      promotions.value = promotions.value.filter((p) => p.id !== promotionId)
+    } catch (error) {
+      console.error('Failed to delete promotion:', error)
+    }
+  }
 }
 
 const formatDate = (dateString) => {
@@ -629,6 +1139,12 @@ const loadData = () => {
     loadUsers()
   } else if (activeTab.value === 'products') {
     loadProducts()
+    loadCategories() // Load categories for product form
+    loadPromotions() // Load promotions for product form
+  } else if (activeTab.value === 'categories') {
+    loadCategories()
+  } else if (activeTab.value === 'promotions') {
+    loadPromotions()
   } else if (activeTab.value === 'orders') {
     loadOrders()
   }
