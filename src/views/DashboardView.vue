@@ -20,16 +20,6 @@ const dashboardData = reactive({
 })
 
 const isLoading = ref(false)
-const showPasswordModal = ref(false)
-
-// Password change form
-const passwordForm = reactive({
-  oldPassword: '',
-  newPassword: '',
-  newConfirmPassword: '',
-})
-const passwordErrors = ref({})
-const isChangingPassword = ref(false)
 
 // Quick actions
 const quickActions = [
@@ -53,13 +43,6 @@ const quickActions = [
     icon: 'fas fa-percentage',
     color: 'red',
     action: () => router.push('/promotions'),
-  },
-  {
-    title: 'Change Password',
-    description: 'Update your password',
-    icon: 'fas fa-lock',
-    color: 'purple',
-    action: () => (showPasswordModal.value = true),
   },
   {
     title: 'Shopping Cart',
@@ -96,67 +79,6 @@ async function loadDashboardData() {
     console.error('Failed to load dashboard data:', error)
   } finally {
     isLoading.value = false
-  }
-}
-
-// Validate password form
-function validatePasswordForm() {
-  const newErrors = {}
-
-  if (!passwordForm.oldPassword) {
-    newErrors.oldPassword = 'Current password is required'
-  }
-
-  if (!passwordForm.newPassword) {
-    newErrors.newPassword = 'New password is required'
-  } else if (passwordForm.newPassword.length < 6) {
-    newErrors.newPassword = 'Password must be at least 6 characters long'
-  }
-
-  if (!passwordForm.newConfirmPassword) {
-    newErrors.newConfirmPassword = 'Please confirm your new password'
-  } else if (passwordForm.newPassword !== passwordForm.newConfirmPassword) {
-    newErrors.newConfirmPassword = 'Passwords do not match'
-  }
-
-  passwordErrors.value = newErrors
-  return Object.keys(newErrors).length === 0
-}
-
-// Change password
-async function changePassword() {
-  if (!validatePasswordForm()) {
-    return
-  }
-
-  isChangingPassword.value = true
-  userStore.clearError()
-
-  try {
-    await userApi.changePassword({
-      oldPassword: passwordForm.oldPassword,
-      newPassword: passwordForm.newPassword,
-      newConfirmPassword: passwordForm.newConfirmPassword,
-    })
-
-    // Reset form and close modal
-    Object.assign(passwordForm, {
-      oldPassword: '',
-      newPassword: '',
-      newConfirmPassword: '',
-    })
-    passwordErrors.value = {}
-    showPasswordModal.value = false
-
-    // Show success message (you might want to add a toast notification here)
-    alert('Password changed successfully!')
-  } catch (error) {
-      for (const [field, message] of Object.entries(error)) {
-        passwordErrors.value[field] = message
-      }
-    userStore.setError(error.message || 'Failed to change password')
-  } finally {
-    isChangingPassword.value = false
   }
 }
 
@@ -353,122 +275,6 @@ onMounted(() => {
           </div>
         </div>
       </template>
-    </div>
-
-    <!-- Password Change Modal -->
-    <div
-      v-if="showPasswordModal"
-      class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center p-4 z-50"
-    >
-      <div class="bg-white rounded-lg shadow-xl max-w-md w-full">
-        <div class="px-6 py-4 border-b border-gray-200">
-          <div class="flex items-center justify-between">
-            <h3 class="text-lg font-medium text-gray-900">Change Password</h3>
-            <button
-              @click="showPasswordModal = false"
-              class="text-gray-400 hover:text-gray-600 transition duration-200"
-            >
-              <i class="fas fa-times"></i>
-            </button>
-          </div>
-        </div>
-
-        <form @submit.prevent="changePassword" class="p-6">
-          <!-- Error display -->
-          <div
-            v-if="userStore.error"
-            class="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md text-sm mb-4"
-          >
-            <div class="flex">
-              <i class="fas fa-exclamation-circle mt-0.5 mr-2"></i>
-              <span>{{ userStore.error }}</span>
-            </div>
-          </div>
-
-          <div class="space-y-4">
-            <!-- Current Password -->
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2"> Current Password </label>
-              <input
-                v-model="passwordForm.oldPassword"
-                type="password"
-                :class="[
-                  'block w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm',
-                  passwordErrors.oldPassword
-                    ? 'border-red-300 focus:ring-red-500 focus:border-red-500'
-                    : '',
-                ]"
-                placeholder="Enter current password"
-              />
-              <p v-if="passwordErrors.oldPassword" class="mt-1 text-sm text-red-600">
-                {{ passwordErrors.oldPassword }}
-              </p>
-            </div>
-
-            <!-- New Password -->
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2"> New Password </label>
-              <input
-                v-model="passwordForm.newPassword"
-                type="password"
-                :class="[
-                  'block w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm',
-                  passwordErrors.newPassword
-                    ? 'border-red-300 focus:ring-red-500 focus:border-red-500'
-                    : '',
-                ]"
-                placeholder="Enter new password"
-              />
-              <p v-if="passwordErrors.newPassword" class="mt-1 text-sm text-red-600">
-                {{ passwordErrors.newPassword }}
-              </p>
-            </div>
-
-            <!-- Confirm New Password -->
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">
-                Confirm New Password
-              </label>
-              <input
-                v-model="passwordForm.newConfirmPassword"
-                type="password"
-                :class="[
-                  'block w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm',
-                  passwordErrors.newConfirmPassword
-                    ? 'border-red-300 focus:ring-red-500 focus:border-red-500'
-                    : '',
-                ]"
-                placeholder="Confirm new password"
-              />
-              <p v-if="passwordErrors.newConfirmPassword" class="mt-1 text-sm text-red-600">
-                {{ passwordErrors.newConfirmPassword }}
-              </p>
-            </div>
-          </div>
-
-          <div class="flex justify-end space-x-4 mt-6">
-            <button
-              type="button"
-              @click="showPasswordModal = false"
-              class="px-4 py-2 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-200"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              :disabled="isChangingPassword"
-              :class="[
-                'px-4 py-2 text-sm font-medium rounded-lg text-white transition duration-200',
-                isChangingPassword
-                  ? 'bg-gray-400 cursor-not-allowed'
-                  : 'bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500',
-              ]"
-            >
-              {{ isChangingPassword ? 'Changing...' : 'Change Password' }}
-            </button>
-          </div>
-        </form>
-      </div>
     </div>
   </div>
 </template>
