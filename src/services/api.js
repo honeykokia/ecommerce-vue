@@ -28,10 +28,15 @@ async function apiRequest(url, options = {}) {
   try {
     const response = await fetch(`${API_BASE_URL}${url}`, config)
     let result;
-    try {
-      result = await response.json();
-    } catch (e) {
-      result = null; // 不是 JSON，就設成 null
+    const contentType = response.headers.get('content-type')
+
+    // Check if response is JSON or text
+    if (contentType && contentType.includes('application/json')) {
+      result = await response.json()
+    } else if (contentType && contentType.includes('text/html')) {
+      result = await response.text()
+    } else {
+      result = null // Not JSON or text, set to null
     }
 
     if (response.status === 401) {
@@ -44,16 +49,6 @@ async function apiRequest(url, options = {}) {
       ?? result
       ?? { message: 'Connection error' };
     }
-
-    // For non-2xx status codes, throw error with response data
-    // if (!response.ok) {
-    //   const error = new Error(`HTTP ${response.status}`)
-    //   error.response = {
-    //     status: response.status,
-    //     data: result,
-    //   }
-    //   throw error
-    // }
 
     return result
   } catch (error) {
@@ -276,6 +271,10 @@ export const adminApi = {
     return apiRequest('/admin/orders')
   },
 
+  async getOrderStatusById(orderId) {
+    return apiRequest(`/orders/${orderId}/status`)
+  },
+
   async updateOrderStatus(orderId, statusData) {
     return apiRequest(`/admin/orders/${orderId}`, {
       method: 'PATCH',
@@ -298,7 +297,7 @@ export const adminApi = {
   },
 
   async getCategories() {
-    return apiRequest('/admin/categories')
+    return apiRequest('/categories')
   },
 
   async updateCategory(categoryId, categoryData) {
@@ -323,7 +322,7 @@ export const adminApi = {
   },
 
   async getPromotions() {
-    return apiRequest('/admin/promotions')
+    return apiRequest('/promotions')
   },
 
   async updatePromotion(promotionId, promotionData) {
@@ -342,7 +341,6 @@ export const adminApi = {
 
 // Payment APIs
 export const paymentApi = {
-  // Process payment checkout
   async checkout(paymentData) {
     return apiRequest('/payments/checkout', {
       method: 'POST',

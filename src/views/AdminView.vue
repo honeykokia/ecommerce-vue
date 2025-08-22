@@ -1,3 +1,379 @@
+<script setup>
+import { ref, reactive, onMounted, watch } from 'vue'
+import { useRouter } from 'vue-router'
+import { useUserStore } from '@/stores/user'
+import { adminApi } from '@/services/api'
+import { mockUsers, mockProducts, mockOrders } from '@/services/mockData'
+
+const api = import.meta.env.VITE_API_URL
+const router = useRouter()
+const userStore = useUserStore()
+
+// Reactive state
+const activeTab = ref('users')
+const isLoading = ref(false)
+const users = ref([])
+const products = ref([])
+const categories = ref([])
+const promotions = ref([])
+const orders = ref([])
+const showProductForm = ref(false)
+const showCategoryForm = ref(false)
+const showPromotionForm = ref(false)
+const editingProduct = ref(null)
+const editingCategory = ref(null)
+const editingPromotion = ref(null)
+
+// Tab configuration
+const tabs = [
+  { id: 'users', name: 'Users' },
+  { id: 'products', name: 'Products' },
+  { id: 'categories', name: 'Categories' },
+  { id: 'promotions', name: 'Promotions' },
+  { id: 'orders', name: 'Orders' },
+]
+
+// Product form
+const productForm = reactive({
+  name: '',
+  price: 0,
+  inStock: 0,
+  shortDescription: '',
+  imageURL: '',
+  rating: 0,
+  categoryId: null, 
+  promotionId: null,
+})
+
+// Category form
+const categoryForm = reactive({
+  name: '',
+  description: '',
+})
+
+// Promotion form
+const promotionForm = reactive({
+  name: '',
+  description: '',
+  discountPercentage: 0,
+  startDate: '',
+  endDate: '',
+  isActive: true,
+})
+
+// Methods
+const logout = () => {
+  userStore.logout()
+  router.push('/login')
+}
+
+const loadUsers = async () => {
+  try {
+    isLoading.value = true
+    const response = await adminApi.getUsers()
+    if (response.data && response.data.users) {
+      users.value = response.data.users
+    }
+  } catch (error) {
+    console.error('Failed to load users:', error)
+    // Use mock data when API is not available
+    users.value = mockUsers
+  } finally {
+    isLoading.value = false
+  }
+}
+
+const loadProducts = async () => {
+  try {
+    isLoading.value = true
+    const response = await adminApi.getProducts()
+    if (response.data && response.data.products) {
+      products.value = response.data.products
+    }
+
+  } catch (error) {
+    console.error('Failed to load products:', error)
+    // Use mock data when API is not available
+    products.value = mockProducts
+  } finally {
+    isLoading.value = false
+  }
+}
+
+const loadOrders = async () => {
+  try {
+    isLoading.value = true
+    const response = await adminApi.getOrders()
+    if (response.data && response.data.orders) {
+      orders.value = response.data.orders
+    }
+  } catch (error) {
+    console.error('Failed to load orders:', error)
+    // Use mock data when API is not available
+    orders.value = mockOrders
+  } finally {
+    isLoading.value = false
+  }
+}
+
+const loadCategories = async () => {
+  try {
+    isLoading.value = true
+    const response = await adminApi.getCategories()
+    if (response.data && response.data.categories) {
+      categories.value = response.data.categories
+    }
+  } catch (error) {
+    console.error('Failed to load categories:', error)
+    // Use mock data when API is not available
+    categories.value = []
+  } finally {
+    isLoading.value = false
+  }
+}
+
+const loadPromotions = async () => {
+  try {
+    isLoading.value = true
+    const response = await adminApi.getPromotions()
+    if (response.data && response.data.promotions) {
+      promotions.value = response.data.promotions
+    }
+  } catch (error) {
+    console.error('Failed to load promotions:', error)
+    // Use mock data when API is not available
+    promotions.value = []
+  } finally {
+    isLoading.value = false
+  }
+}
+
+const updateUserStatus = async (userId, status) => {
+  try {
+    await adminApi.updateUserStatus(userId, { status })
+    // Update local state
+    const user = users.value.find((u) => u.id === userId)
+    if (user) {
+      user.status = status
+    }
+  } catch (error) {
+    console.error('Failed to update user status:', error)
+  }
+}
+
+const editProduct = (product) => {
+  editingProduct.value = product
+  Object.assign(productForm, product)
+  showProductForm.value = true
+}
+
+const saveProduct = async () => {
+  try {
+    if (editingProduct.value) {
+      // Update existing product
+      await adminApi.updateProduct(editingProduct.value.id, productForm)
+      const index = products.value.findIndex((p) => p.id === editingProduct.value.id)
+      if (index !== -1) {
+        products.value[index] = { ...editingProduct.value, ...productForm }
+      }
+    } else {
+      // Create new product
+      const response = await adminApi.createProduct(productForm)
+      if (response.data && response.data.product) {
+        products.value.push(response.data.product)
+      }
+    }
+    showProductForm.value = false
+    resetProductForm()
+  } catch (error) {
+    console.error('Failed to save product:', error)
+  }
+}
+
+const deleteProduct = async (productId) => {
+  if (confirm('Are you sure you want to delete this product?')) {
+    try {
+      await adminApi.deleteProduct(productId)
+      products.value = products.value.filter((p) => p.id !== productId)
+    } catch (error) {
+      console.error('Failed to delete product:', error)
+    }
+  }
+}
+
+const updateOrderStatus = async (orderId, status) => {
+  try {
+    await adminApi.updateOrderStatus(orderId, { status })
+    // Update local state
+    const order = orders.value.find((o) => o.id === orderId)
+    if (order) {
+      order.status = status
+    }
+  } catch (error) {
+    console.error('Failed to update order status:', error)
+  }
+}
+
+const deleteOrder = async (orderId) => {
+  if (confirm('Are you sure you want to delete this order?')) {
+    try {
+      await adminApi.deleteOrder(orderId)
+      orders.value = orders.value.filter((o) => o.id !== orderId)
+    } catch (error) {
+      console.error('Failed to delete order:', error)
+    }
+  }
+}
+
+const resetProductForm = () => {
+  Object.assign(productForm, {
+    name: '',
+    price: 0,
+    inStock: 0,
+    shortDescription: '',
+    imageURL: '',
+    rating: 0,
+    categoryId: null,
+    promotionId: null,
+  })
+  editingProduct.value = null
+}
+
+const resetCategoryForm = () => {
+  Object.assign(categoryForm, {
+    name: '',
+    description: '',
+  })
+  editingCategory.value = null
+}
+
+const resetPromotionForm = () => {
+  Object.assign(promotionForm, {
+    name: '',
+    description: '',
+    discountType: '',
+    discountValue: 0,
+    startDate: '',
+    endDate: '',
+    isActive: true,
+  })
+  editingPromotion.value = null
+}
+
+const editCategory = (category) => {
+  editingCategory.value = category
+  Object.assign(categoryForm, category)
+  showCategoryForm.value = true
+}
+
+const saveCategory = async () => {
+  try {
+    if (editingCategory.value) {
+      // Update existing category
+      await adminApi.updateCategory(editingCategory.value.id, categoryForm)
+      const index = categories.value.findIndex((c) => c.id === editingCategory.value.id)
+      if (index !== -1) {
+        categories.value[index] = { ...editingCategory.value, ...categoryForm }
+      }
+    } else {
+      // Create new category
+      const response = await adminApi.createCategory(categoryForm)
+      if (response.data && response.data.category) {
+        categories.value.push(response.data.category)
+      }
+    }
+    showCategoryForm.value = false
+    resetCategoryForm()
+    loadCategories()
+  } catch (error) {
+    console.error('Failed to save category:', error)
+  }
+}
+
+const deleteCategory = async (categoryId) => {
+  if (confirm('Are you sure you want to delete this category?')) {
+    try {
+      await adminApi.deleteCategory(categoryId)
+      categories.value = categories.value.filter((c) => c.id !== categoryId)
+    } catch (error) {
+      console.error('Failed to delete category:', error)
+    }
+  }
+}
+
+const editPromotion = (promotion) => {
+  editingPromotion.value = promotion
+  Object.assign(promotionForm, promotion)
+  showPromotionForm.value = true
+}
+
+const savePromotion = async () => {
+  try {
+    if (editingPromotion.value) {
+      // Update existing promotion
+      await adminApi.updatePromotion(editingPromotion.value.id, promotionForm)
+      const index = promotions.value.findIndex((p) => p.id === editingPromotion.value.id)
+      if (index !== -1) {
+        promotions.value[index] = { ...editingPromotion.value, ...promotionForm }
+      }
+    } else {
+      // Create new promotion
+      const response = await adminApi.createPromotion(promotionForm)
+      if (response.data && response.data.promotion) {
+        promotions.value.push(response.data.promotion)
+      }
+    }
+    showPromotionForm.value = false
+    resetPromotionForm()
+    loadPromotions()
+  } catch (error) {
+    console.error('Failed to save promotion:', error)
+  }
+}
+
+const deletePromotion = async (promotionId) => {
+  if (confirm('Are you sure you want to delete this promotion?')) {
+    try {
+      await adminApi.deletePromotion(promotionId)
+      promotions.value = promotions.value.filter((p) => p.id !== promotionId)
+    } catch (error) {
+      console.error('Failed to delete promotion:', error)
+    }
+  }
+}
+
+const formatDate = (dateString) => {
+  if (!dateString) return ''
+  return new Date(dateString).toLocaleDateString()
+}
+
+// Load data when tab changes
+const loadData = () => {
+  if (activeTab.value === 'users') {
+    loadUsers()
+  } else if (activeTab.value === 'products') {
+    loadProducts()
+    loadCategories() // Load categories for product form
+    loadPromotions() // Load promotions for product form
+  } else if (activeTab.value === 'categories') {
+    loadCategories()
+  } else if (activeTab.value === 'promotions') {
+    loadPromotions()
+  } else if (activeTab.value === 'orders') {
+    loadOrders()
+  }
+}
+
+// Watch for tab changes
+const originalActiveTab = activeTab.value
+watch(() => activeTab.value, loadData)
+
+// Load initial data
+onMounted(() => {
+  loadData()
+})
+</script>
+
 <template>
   <div class="min-h-screen bg-gray-50">
     <!-- Header -->
@@ -8,13 +384,13 @@
             <h1 class="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
           </div>
           <div class="flex items-center space-x-4">
-            <span class="text-sm text-gray-700">Welcome, {{ userStore.userName }}</span>
-            <button
+            <!-- <span class="text-sm text-gray-700">Welcome, {{ userStore.userEmail }}</span> -->
+            <!-- <button
               @click="logout"
               class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
             >
               Logout
-            </button>
+            </button> -->
           </div>
         </div>
       </div>
@@ -214,7 +590,7 @@
                     <td class="px-6 py-4 whitespace-nowrap">
                       <div class="flex items-center">
                         <img
-                          :src="product.imageUrl || '/placeholder-product.jpg'"
+                          :src="`${api}${product.imageURL || '/placeholder-product.jpg'}`"
                           :alt="product.name"
                           class="h-10 w-10 rounded object-cover"
                         />
@@ -225,7 +601,7 @@
                       </div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      ${{ product.price }}
+                      ${{ product.originalPrice }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {{ product.inStock }}
@@ -365,6 +741,11 @@
                     <th
                       class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                     >
+                      Type
+                    </th>
+                    <th
+                      class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
                       Start Date
                     </th>
                     <th
@@ -391,7 +772,10 @@
                       <div class="text-sm text-gray-500">{{ promotion.description }}</div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {{ promotion.discountPercentage }}%
+                      {{ promotion.discountValue }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {{ promotion.discountType === 'PERCENTAGE'? '%' : '$' }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {{ formatDate(promotion.startDate) }}
@@ -487,13 +871,13 @@
                 <tbody class="bg-white divide-y divide-gray-200">
                   <tr v-for="order in orders" :key="order.id">
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      {{ order.orderNumber }}
+                      {{ order.merchant_trade_no }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       User #{{ order.userId }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      ${{ order.totalPrice }}
+                      ${{ order.amountCents }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
                       <span
@@ -514,7 +898,7 @@
                       </span>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {{ formatDate(order.createAt) }}
+                      {{ formatDate(order.createdAt) }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
                       <select
@@ -598,8 +982,20 @@
             <div>
               <label class="block text-sm font-medium text-gray-700">Image URL</label>
               <input
-                v-model="productForm.imageUrl"
-                type="url"
+                v-model="productForm.imageURL"
+                type="text"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Rating</label>
+              <input
+                v-model.number="productForm.rating"
+                type="number"
+                min="0"
+                max="5"
+                step="0.1"
+                required
                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               />
             </div>
@@ -727,17 +1123,26 @@
                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               ></textarea>
             </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700">Discount Percentage</label>
-              <input
-                v-model.number="promotionForm.discountPercentage"
-                type="number"
-                min="0"
-                max="100"
-                step="0.01"
-                required
-                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              />
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700">Discount Type</label>
+                <select v-model="promotionForm.discountType" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                  <option value="PERCENTAGE">PERCENTAGE</option>
+                  <option value="FIXED">FIXED</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700">Discount Value</label>
+                <input
+                  v-model.number="promotionForm.discountValue"
+                  type="number"
+                  :min="promotionForm.discountType === 'PERCENTAGE' ? 0 : 1"
+                  :max="promotionForm.discountType === 'PERCENTAGE' ? 100 : null"
+                  step="0.01"
+                  required
+                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                />
+              </div>
             </div>
             <div class="grid grid-cols-2 gap-4">
               <div>
@@ -772,7 +1177,7 @@
             <div class="flex justify-end space-x-3 pt-4">
               <button
                 type="button"
-                @click="showPromotionForm = false"
+                @click="showPromotionForm = false; resetPromotionForm()"
                 class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50"
               >
                 Cancel
@@ -791,371 +1196,3 @@
   </div>
 </template>
 
-<script setup>
-import { ref, reactive, onMounted, watch } from 'vue'
-import { useRouter } from 'vue-router'
-import { useUserStore } from '@/stores/user'
-import { adminApi } from '@/services/api'
-import { mockUsers, mockProducts, mockOrders } from '@/services/mockData'
-
-const router = useRouter()
-const userStore = useUserStore()
-
-// Reactive state
-const activeTab = ref('users')
-const isLoading = ref(false)
-const users = ref([])
-const products = ref([])
-const categories = ref([])
-const promotions = ref([])
-const orders = ref([])
-const showProductForm = ref(false)
-const showCategoryForm = ref(false)
-const showPromotionForm = ref(false)
-const editingProduct = ref(null)
-const editingCategory = ref(null)
-const editingPromotion = ref(null)
-
-// Tab configuration
-const tabs = [
-  { id: 'users', name: 'Users' },
-  { id: 'products', name: 'Products' },
-  { id: 'categories', name: 'Categories' },
-  { id: 'promotions', name: 'Promotions' },
-  { id: 'orders', name: 'Orders' },
-]
-
-// Product form
-const productForm = reactive({
-  name: '',
-  price: 0,
-  inStock: 0,
-  shortDescription: '',
-  imageUrl: '',
-  categoryId: null, 
-  promotionId: null,
-})
-
-// Category form
-const categoryForm = reactive({
-  name: '',
-  description: '',
-})
-
-// Promotion form
-const promotionForm = reactive({
-  name: '',
-  description: '',
-  discountPercentage: 0,
-  startDate: '',
-  endDate: '',
-  isActive: true,
-})
-
-// Methods
-const logout = () => {
-  userStore.logout()
-  router.push('/login')
-}
-
-const loadUsers = async () => {
-  try {
-    isLoading.value = true
-    const response = await adminApi.getUsers()
-    if (response.data && response.data.users) {
-      users.value = response.data.users
-    }
-  } catch (error) {
-    console.error('Failed to load users:', error)
-    // Use mock data when API is not available
-    users.value = mockUsers
-  } finally {
-    isLoading.value = false
-  }
-}
-
-const loadProducts = async () => {
-  try {
-    isLoading.value = true
-    const response = await adminApi.getProducts()
-    if (response.data && response.data.products) {
-      products.value = response.data.products
-    }
-  } catch (error) {
-    console.error('Failed to load products:', error)
-    // Use mock data when API is not available
-    products.value = mockProducts
-  } finally {
-    isLoading.value = false
-  }
-}
-
-const loadOrders = async () => {
-  try {
-    isLoading.value = true
-    const response = await adminApi.getOrders()
-    if (response.data && response.data.orders) {
-      orders.value = response.data.orders
-    }
-  } catch (error) {
-    console.error('Failed to load orders:', error)
-    // Use mock data when API is not available
-    orders.value = mockOrders
-  } finally {
-    isLoading.value = false
-  }
-}
-
-const loadCategories = async () => {
-  try {
-    isLoading.value = true
-    const response = await adminApi.getCategories()
-    if (response.data && response.data.categories) {
-      categories.value = response.data.categories
-    }
-  } catch (error) {
-    console.error('Failed to load categories:', error)
-    // Use mock data when API is not available
-    categories.value = []
-  } finally {
-    isLoading.value = false
-  }
-}
-
-const loadPromotions = async () => {
-  try {
-    isLoading.value = true
-    const response = await adminApi.getPromotions()
-    if (response.data && response.data.promotions) {
-      promotions.value = response.data.promotions
-    }
-  } catch (error) {
-    console.error('Failed to load promotions:', error)
-    // Use mock data when API is not available
-    promotions.value = []
-  } finally {
-    isLoading.value = false
-  }
-}
-
-const updateUserStatus = async (userId, status) => {
-  try {
-    await adminApi.updateUserStatus(userId, { status })
-    // Update local state
-    const user = users.value.find((u) => u.id === userId)
-    if (user) {
-      user.status = status
-    }
-  } catch (error) {
-    console.error('Failed to update user status:', error)
-  }
-}
-
-const editProduct = (product) => {
-  editingProduct.value = product
-  Object.assign(productForm, product)
-  showProductForm.value = true
-}
-
-const saveProduct = async () => {
-  try {
-    if (editingProduct.value) {
-      // Update existing product
-      await adminApi.updateProduct(editingProduct.value.id, productForm)
-      const index = products.value.findIndex((p) => p.id === editingProduct.value.id)
-      if (index !== -1) {
-        products.value[index] = { ...editingProduct.value, ...productForm }
-      }
-    } else {
-      // Create new product
-      const response = await adminApi.createProduct(productForm)
-      if (response.data && response.data.product) {
-        products.value.push(response.data.product)
-      }
-    }
-    showProductForm.value = false
-    resetProductForm()
-  } catch (error) {
-    console.error('Failed to save product:', error)
-  }
-}
-
-const deleteProduct = async (productId) => {
-  if (confirm('Are you sure you want to delete this product?')) {
-    try {
-      await adminApi.deleteProduct(productId)
-      products.value = products.value.filter((p) => p.id !== productId)
-    } catch (error) {
-      console.error('Failed to delete product:', error)
-    }
-  }
-}
-
-const updateOrderStatus = async (orderId, status) => {
-  try {
-    await adminApi.updateOrderStatus(orderId, { status })
-    // Update local state
-    const order = orders.value.find((o) => o.id === orderId)
-    if (order) {
-      order.status = status
-    }
-  } catch (error) {
-    console.error('Failed to update order status:', error)
-  }
-}
-
-const deleteOrder = async (orderId) => {
-  if (confirm('Are you sure you want to delete this order?')) {
-    try {
-      await adminApi.deleteOrder(orderId)
-      orders.value = orders.value.filter((o) => o.id !== orderId)
-    } catch (error) {
-      console.error('Failed to delete order:', error)
-    }
-  }
-}
-
-const resetProductForm = () => {
-  Object.assign(productForm, {
-    name: '',
-    price: 0,
-    inStock: 0,
-    shortDescription: '',
-    imageUrl: '',
-    categoryId: null,
-    promotionId: null,
-  })
-  editingProduct.value = null
-}
-
-const resetCategoryForm = () => {
-  Object.assign(categoryForm, {
-    name: '',
-    description: '',
-  })
-  editingCategory.value = null
-}
-
-const resetPromotionForm = () => {
-  Object.assign(promotionForm, {
-    name: '',
-    description: '',
-    discountPercentage: 0,
-    startDate: '',
-    endDate: '',
-    isActive: true,
-  })
-  editingPromotion.value = null
-}
-
-const editCategory = (category) => {
-  editingCategory.value = category
-  Object.assign(categoryForm, category)
-  showCategoryForm.value = true
-}
-
-const saveCategory = async () => {
-  try {
-    if (editingCategory.value) {
-      // Update existing category
-      await adminApi.updateCategory(editingCategory.value.id, categoryForm)
-      const index = categories.value.findIndex((c) => c.id === editingCategory.value.id)
-      if (index !== -1) {
-        categories.value[index] = { ...editingCategory.value, ...categoryForm }
-      }
-    } else {
-      // Create new category
-      const response = await adminApi.createCategory(categoryForm)
-      if (response.data && response.data.category) {
-        categories.value.push(response.data.category)
-      }
-    }
-    showCategoryForm.value = false
-    resetCategoryForm()
-  } catch (error) {
-    console.error('Failed to save category:', error)
-  }
-}
-
-const deleteCategory = async (categoryId) => {
-  if (confirm('Are you sure you want to delete this category?')) {
-    try {
-      await adminApi.deleteCategory(categoryId)
-      categories.value = categories.value.filter((c) => c.id !== categoryId)
-    } catch (error) {
-      console.error('Failed to delete category:', error)
-    }
-  }
-}
-
-const editPromotion = (promotion) => {
-  editingPromotion.value = promotion
-  Object.assign(promotionForm, promotion)
-  showPromotionForm.value = true
-}
-
-const savePromotion = async () => {
-  try {
-    if (editingPromotion.value) {
-      // Update existing promotion
-      await adminApi.updatePromotion(editingPromotion.value.id, promotionForm)
-      const index = promotions.value.findIndex((p) => p.id === editingPromotion.value.id)
-      if (index !== -1) {
-        promotions.value[index] = { ...editingPromotion.value, ...promotionForm }
-      }
-    } else {
-      // Create new promotion
-      const response = await adminApi.createPromotion(promotionForm)
-      if (response.data && response.data.promotion) {
-        promotions.value.push(response.data.promotion)
-      }
-    }
-    showPromotionForm.value = false
-    resetPromotionForm()
-  } catch (error) {
-    console.error('Failed to save promotion:', error)
-  }
-}
-
-const deletePromotion = async (promotionId) => {
-  if (confirm('Are you sure you want to delete this promotion?')) {
-    try {
-      await adminApi.deletePromotion(promotionId)
-      promotions.value = promotions.value.filter((p) => p.id !== promotionId)
-    } catch (error) {
-      console.error('Failed to delete promotion:', error)
-    }
-  }
-}
-
-const formatDate = (dateString) => {
-  if (!dateString) return ''
-  return new Date(dateString).toLocaleDateString()
-}
-
-// Load data when tab changes
-const loadData = () => {
-  if (activeTab.value === 'users') {
-    loadUsers()
-  } else if (activeTab.value === 'products') {
-    loadProducts()
-    loadCategories() // Load categories for product form
-    loadPromotions() // Load promotions for product form
-  } else if (activeTab.value === 'categories') {
-    loadCategories()
-  } else if (activeTab.value === 'promotions') {
-    loadPromotions()
-  } else if (activeTab.value === 'orders') {
-    loadOrders()
-  }
-}
-
-// Watch for tab changes
-const originalActiveTab = activeTab.value
-watch(() => activeTab.value, loadData)
-
-// Load initial data
-onMounted(() => {
-  loadData()
-})
-</script>

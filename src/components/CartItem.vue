@@ -96,9 +96,9 @@ const onQuantityInputChange = () => {
           {{ product?.name || 'Loading...' }}
         </h3>
 
-        <p v-if="product?.shortDescription" class="text-gray-600 text-sm mb-2 line-clamp-2">
+        <!-- <p v-if="product?.shortDescription" class="text-gray-600 text-sm mb-2 line-clamp-2">
           {{ product.shortDescription }}
-        </p>
+        </p> -->
 
         <div class="flex flex-wrap items-center gap-4 text-sm text-gray-500">
           <span class="flex items-center">

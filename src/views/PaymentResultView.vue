@@ -1,8 +1,8 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, reactive } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useUserStore } from '../stores/user.js'
-import { paymentApi } from '../services/api.js'
+import { adminApi,paymentApi } from '../services/api.js'
 
 const router = useRouter()
 const route = useRoute()
@@ -25,9 +25,8 @@ const formatPrice = (price) => {
 
 // Process payment checkout
 async function processPayment() {
-  const { orderId, amount } = route.query
-
-  if (!orderId || !amount) {
+  const { orderId , merchantTradeNo, amountCents, itemName, tradeDesc } = route.query
+  if (!merchantTradeNo || !amountCents) {
     paymentError.value = '缺少訂單資訊，無法處理付款'
     return
   }
@@ -37,30 +36,40 @@ async function processPayment() {
 
   try {
     // Create payment checkout request based on PaymentCheckoutRequest schema
-    const paymentData = {
-      orderId: orderId,
-      amount: parseInt(amount),
-      itemName: `訂單 ${orderId}`,
-      tradeDesc: `電商訂單付款 - ${orderId}`,
-    }
-
+    const paymentData = reactive({
+      merchantTradeNo: merchantTradeNo,
+      amountCents: parseInt(amountCents),
+      itemName: itemName,
+      tradeDesc: tradeDesc,
+    })
     const response = await paymentApi.checkout(paymentData)
 
     // Based on API spec, the response should redirect to ECPay payment page
     // For this demo, we'll simulate a successful payment
+
     if (response) {
       // Store order info for display
       orderInfo.value = {
-        orderId: orderId,
-        amount: parseInt(amount),
+        orderId: merchantTradeNo,
+        amount: parseInt(amountCents),
         timestamp: new Date().toISOString(),
       }
-
+      const w = window.open('', 'ecpayWin')
+      w.document.open()
+      w.document.write(response)
+      w.document.close()
       // Simulate payment processing delay
-      setTimeout(() => {
-        paymentSuccess.value = true
-        isProcessing.value = false
-      }, 2000)
+      let pollTimer = null
+      pollTimer = setInterval(async() => {
+        const res = await adminApi.getOrderStatusById(orderId)
+        if (res.data.order.status === 'PAID') {
+          clearInterval(pollTimer)
+          isProcessing.value = false
+          paymentSuccess.value = true
+        }
+          // paymentSuccess.value = true
+          // isProcessing.value = true
+        }, 5000)
     }
   } catch (error) {
     console.error('Payment processing failed:', error)

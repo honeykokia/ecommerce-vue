@@ -3,6 +3,7 @@ import { ref, reactive, computed, onMounted } from 'vue'
 import { useUserStore } from '../stores/user.js'
 import { orderApi } from '../services/api.js'
 
+const api = import.meta.env.VITE_API_URL
 const userStore = useUserStore()
 
 // Orders data
@@ -59,6 +60,7 @@ async function loadOrderDetails(orderId) {
     if (response.data && response.data.items) {
       orderDetails.value = response.data.items
     }
+    console.log(response.data.items)
   } catch (error) {
     userStore.setError(error.message || 'Failed to load order details')
   } finally {
@@ -112,15 +114,15 @@ const filteredOrders = computed(() => {
 
 // Format currency
 function formatCurrency(amount) {
-  return new Intl.NumberFormat('en-US', {
+  return new Intl.NumberFormat('zh-TW', {
     style: 'currency',
-    currency: 'USD',
-  }).format(amount / 100) // Assuming amounts are in cents
+    currency: 'TWD',
+  }).format(amount) // Assuming amounts are in cents
 }
 
 // Format date
 function formatDate(dateString) {
-  return new Date(dateString).toLocaleDateString('en-US', {
+  return new Date(dateString).toLocaleDateString('zh-TW', {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
@@ -263,10 +265,10 @@ onMounted(() => {
               <div class="flex-1">
                 <div class="flex items-center space-x-4">
                   <div>
-                    <p class="text-lg font-medium text-gray-900">Order #{{ order.orderNumber }}</p>
+                    <p class="text-lg font-medium text-gray-900">#{{ order.merchantTradeNo }}</p>
                     <div class="flex items-center space-x-4 mt-1">
                       <p class="text-sm text-gray-600">
-                        {{ formatDate(order.createAt) }}
+                        {{ formatDate(order.createdAt) }}
                       </p>
                       <span :class="getStatusClasses(order.status)">
                         {{ order.status }}
@@ -279,7 +281,7 @@ onMounted(() => {
                   <div>
                     <p class="text-sm font-medium text-gray-500">Total Amount</p>
                     <p class="text-lg font-bold text-gray-900">
-                      {{ formatCurrency(order.totalPrice) }}
+                      {{ formatCurrency(order.amountCents) }}
                     </p>
                   </div>
                   <div>
@@ -351,7 +353,7 @@ onMounted(() => {
         <div class="px-6 py-4 border-b border-gray-200">
           <div class="flex items-center justify-between">
             <h3 class="text-lg font-medium text-gray-900">
-              Order Details - #{{ selectedOrder?.orderNumber }}
+              Order Details - #{{ selectedOrder?.merchantTradeNo }}
             </h3>
             <button
               @click="showOrderModal = false"
@@ -376,11 +378,14 @@ onMounted(() => {
               :key="item.productId"
               class="flex items-center space-x-4 p-4 border border-gray-200 rounded-lg"
             >
+              <!-- <div>
+                  <img :src="`${api}${item.imageURL}`" alt="" class="w-16 h-16 object-cover rounded-md" />
+              </div> -->
               <div class="flex-1">
                 <h4 class="font-medium text-gray-900">{{ item.productName }}</h4>
                 <div class="flex items-center space-x-4 mt-2 text-sm text-gray-600">
                   <span>Quantity: {{ item.quantity }}</span>
-                  <span>Unit Price: {{ formatCurrency(item.price) }}</span>
+                  <span>Unit Price: {{ formatCurrency(item.unitPrice) }}</span>
                   <span class="font-medium text-gray-900">
                     Total: {{ formatCurrency(item.totalPrice) }}
                   </span>
@@ -393,7 +398,7 @@ onMounted(() => {
               <div class="flex justify-between items-center">
                 <span class="text-lg font-medium text-gray-900">Order Total</span>
                 <span class="text-xl font-bold text-gray-900">
-                  {{ formatCurrency(selectedOrder?.totalPrice) }}
+                  {{ formatCurrency(selectedOrder?.amountCents) }}
                 </span>
               </div>
             </div>
