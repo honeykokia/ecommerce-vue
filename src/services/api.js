@@ -337,6 +337,31 @@ export const adminApi = {
       method: 'DELETE',
     })
   },
+
+  // Tags management
+  async getTags() {
+    return apiRequest('/tags')
+  },
+
+  async createTag(tagId, tagData) {
+    return apiRequest(`/tags/${tagId}`, {
+      method: 'POST',
+      body: JSON.stringify(tagData),
+    })
+  },
+
+  async updateTag(tagId, tagData) {
+    return apiRequest(`/tags/${tagId}`, {
+      method: 'PUT',
+      body: JSON.stringify(tagData),
+    })
+  },
+
+  async deleteTag(tagId) {
+    return apiRequest(`/tags/${tagId}`, {
+      method: 'DELETE',
+    })
+  },
 }
 
 // Payment APIs
