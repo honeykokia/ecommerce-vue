@@ -67,7 +67,7 @@ async function loadDashboardData() {
       dashboardData.orderStats.pending = orders.filter((o) => o.status === 'PENDING').length
       dashboardData.orderStats.completed = orders.filter((o) => o.status === 'COMPLETED').length
       dashboardData.orderStats.cancelled = orders.filter((o) => o.status === 'CANCELED').length
-      dashboardData.totalSpent = orders.reduce((sum, order) => sum + (order.totalPrice || 0), 0)
+      dashboardData.totalSpent = orders.reduce((sum, order) => sum + (order.amountCents || 0), 0)
     }
 
     // Load cart count
@@ -84,10 +84,10 @@ async function loadDashboardData() {
 
 // Format currency
 function formatCurrency(amount) {
-  return new Intl.NumberFormat('en-US', {
+  return new Intl.NumberFormat('zh-TW', {
     style: 'currency',
-    currency: 'USD',
-  }).format(amount / 100) // Assuming amounts are in cents
+    currency: 'TWD',
+  }).format(amount) // Assuming amounts are in cents
 }
 
 // Format date
@@ -246,11 +246,11 @@ onMounted(() => {
             >
               <div class="flex items-center justify-between">
                 <div>
-                  <p class="font-medium text-gray-900">Order #{{ order.orderNumber }}</p>
-                  <p class="text-sm text-gray-600">{{ formatDate(order.createAt) }}</p>
+                  <p class="font-medium text-gray-900">#{{ order.merchantTradeNo }}</p>
+                  <p class="text-sm text-gray-600">{{ formatDate(order.createdAt) }}</p>
                 </div>
                 <div class="text-right">
-                  <p class="font-medium text-gray-900">{{ formatCurrency(order.totalPrice) }}</p>
+                  <p class="font-medium text-gray-900">{{ formatCurrency(order.amountCents) }}</p>
                   <span
                     :class="[
                       'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',

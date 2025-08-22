@@ -114,11 +114,11 @@ const getStockStatus = () => {
       <div class="flex items-center justify-between mb-4">
         <div class="flex items-center space-x-2">
           <span class="text-xl font-bold text-red-600">
-            {{ formatPrice(discountedPrice) }}
+            {{ formatPrice(product.finalPrice) }}
           </span>
           <!-- Original price if discounted -->
-          <span v-if="discountedPrice < product.price" class="text-sm text-gray-500 line-through">
-            {{ formatPrice(product.price) }}
+          <span v-if="product.finalPrice < product.originalPrice" class="text-sm text-gray-500 line-through">
+            {{ formatPrice(product.originalPrice) }}
           </span>
         </div>
       </div>

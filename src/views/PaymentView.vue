@@ -13,7 +13,7 @@ const productStore = useProductStore()
 
 // Form data based on CreateOrderRequest schema
 const formData = reactive({
-  paymentMethod: 'CREDIT_CARD',
+  paymentMethod: 'CREDIT',
   shippingMethod: 'STANDARD',
   shippingAddress: '',
   tradeDesc: '',
@@ -25,7 +25,7 @@ const isSubmitting = ref(false)
 
 // Payment method options
 const paymentMethods = [
-  { value: 'CREDIT_CARD', label: '信用卡' },
+  { value: 'CREDIT', label: '信用卡' },
   { value: 'PAYPAL', label: 'PayPal' },
   { value: 'LINE_PAY', label: 'LINE Pay' },
 ]
@@ -108,12 +108,16 @@ async function handleSubmit() {
       // Clear cart after successful order creation
       await cartStore.clearCart()
 
+      const { orderId , merchantTradeNo, amountCents, itemName, tradeDesc } = response.data.order
       // Navigate to payment result page with order data
       router.push({
         name: 'payment-result',
         query: {
-          orderId: response.data.order.id,
-          amount: finalTotal.value,
+          orderId: orderId,
+          merchantTradeNo: merchantTradeNo,
+          amountCents: amountCents,
+          itemName: itemName,
+          tradeDesc: tradeDesc,
         },
       })
     }

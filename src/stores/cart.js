@@ -83,9 +83,9 @@ export const useCartStore = defineStore('cart', () => {
       return removeFromCart(productId)
     }
 
-    isLoading.value = true
+    // isLoading,value = true
+    isLoading.value = false
     error.value = null
-
     try {
       await cartApi.updateCartItem(productId, quantity)
 

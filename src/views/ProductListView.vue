@@ -2,9 +2,11 @@
 import { onMounted, ref, watch } from 'vue'
 import { useProductStore } from '../stores/product.js'
 import ProductCard from '../components/ProductCard.vue'
+import { useCartStore } from '@/stores/cart.js'
 
 const api = import.meta.env.VITE_API_URL
 const productStore = useProductStore()
+const cartStore = useCartStore()
 
 const isGridView = ref(true)
 const sortBy = ref('name')
@@ -68,6 +70,16 @@ watch(
 
 const handleSortChange = () => {
   // Sorting is handled by the watcher above
+}
+const handleAddToCart = async (product) => {
+  if (product.inStock <= 0) return
+
+  try {
+    await cartStore.addToCart(product.id, 1, product.price)
+  } catch (error) {
+    // Error handling could be improved with toast notifications
+    console.error('Failed to add to cart:', error)
+  }
 }
 
 const clearFilters = () => {
@@ -286,10 +298,21 @@ const clearFilters = () => {
 
               <div class="flex items-center justify-between">
                 <div class="text-2xl font-bold text-red-600">
-                  NT$ {{ product.price.toLocaleString() }}
+                  NT$ {{ product.finalPrice }}
+                  <span class="text-gray-500 line-through" v-if="product.originalPrice > product.finalPrice">
+                    NT$ {{ product.originalPrice }}
+                  </span>
                 </div>
-                <ProductCard :product="product" class="w-auto" />
+                <!-- <ProductCard :product="product" class="w-auto" /> -->
               </div>
+            </div>
+            <div class="md:py-20 flex justify-center">
+              <button
+              @click="handleAddToCart(product)"
+              class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
+              >
+              加入購物車
+              </button>
             </div>
           </div>
         </div>
