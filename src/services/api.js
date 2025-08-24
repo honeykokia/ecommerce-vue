@@ -255,6 +255,16 @@ export const adminApi = {
     })
   },
 
+  async uploadProductImage(productId, file) {
+    const formData = new FormData()
+    formData.append('file', file)
+
+    return apiRequest(`/admin/products/${productId}/image`, {
+      method: 'PUT',
+      body: formData,
+    })
+  },
+
   async deleteProduct(productId) {
     return apiRequest(`/admin/products/${productId}`, {
       method: 'DELETE',
@@ -332,6 +342,16 @@ export const adminApi = {
     })
   },
 
+  async updatePromotionImage(promotionId, file) {
+    const formData = new FormData()
+    formData.append('file', file)
+
+    return apiRequest(`/admin/promotions/${promotionId}/image`, {
+      method: 'PUT',
+      body: formData,
+    })
+  },
+
   async deletePromotion(promotionId) {
     return apiRequest(`/admin/promotions/${promotionId}`, {
       method: 'DELETE',
@@ -340,25 +360,25 @@ export const adminApi = {
 
   // Tags management
   async getTags() {
-    return apiRequest('/tags')
+    return apiRequest('/admin/tags')
   },
 
-  async createTag(tagId, tagData) {
-    return apiRequest(`/tags/${tagId}`, {
+  async createTag(tagData) {
+    return apiRequest(`/admin/tags`, {
       method: 'POST',
       body: JSON.stringify(tagData),
     })
   },
 
   async updateTag(tagId, tagData) {
-    return apiRequest(`/tags/${tagId}`, {
+    return apiRequest(`/admin/tags/${tagId}`, {
       method: 'PUT',
       body: JSON.stringify(tagData),
     })
   },
 
   async deleteTag(tagId) {
-    return apiRequest(`/tags/${tagId}`, {
+    return apiRequest(`/admin/tags/${tagId}`, {
       method: 'DELETE',
     })
   },

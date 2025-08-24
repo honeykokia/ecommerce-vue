@@ -27,7 +27,8 @@ const editingCategory = ref(null)
 const editingPromotion = ref(null)
 const editingTag = ref(null)
 const selectedImageFile = ref(null)
-const imagePreview = ref(null)
+const productImagePreview = ref(null)
+const promotionImagePreview = ref(null)
 
 // Tab configuration
 const tabs = [
@@ -42,7 +43,8 @@ const tabs = [
 // Product form
 const productForm = reactive({
   name: '',
-  price: 0,
+  originalPrice: 0,
+  finalPrice: 0,
   inStock: 0,
   shortDescription: '',
   imageURL: '',
@@ -69,7 +71,6 @@ const promotionForm = reactive({
 
 // Tag form
 const tagForm = reactive({
-  id: '',
   name: '',
   description: '',
   color: '#3B82F6',
@@ -193,17 +194,18 @@ const updateUserStatus = async (userId, status) => {
 
 const editProduct = (product) => {
   editingProduct.value = product
+  console.log(product)
   Object.assign(productForm, product)
   showProductForm.value = true
   selectedImageFile.value = null
-  imagePreview.value = product.imageURL ? `${import.meta.env.VITE_API_URL}${product.imageURL}` : null
+  productImagePreview.value = product.imageURL ? `${api}${product.imageURL}` : null
 }
 
 const saveProduct = async () => {
   try {
     // Handle image upload if a file was selected
     if (selectedImageFile.value) {
-      const imageURL = await uploadImageFile(selectedImageFile.value)
+      const imageURL = await adminApi.uploadProductImage(editingProduct.value.id, selectedImageFile.value)
       productForm.imageURL = imageURL
     }
     
@@ -226,6 +228,7 @@ const saveProduct = async () => {
   } catch (error) {
     console.error('Failed to save product:', error)
   }
+  loadProducts()
 }
 
 const deleteProduct = async (productId) => {
@@ -276,52 +279,23 @@ const resetProductForm = () => {
   })
   editingProduct.value = null
   selectedImageFile.value = null
-  imagePreview.value = null
+  productImagePreview.value = null
 }
 
-const handleImageFileSelect = (event) => {
-  const file = event.target.files[0]
-  if (file) {
-    selectedImageFile.value = file
-    
-    // Create image preview
-    const reader = new FileReader()
-    reader.onload = (e) => {
-      imagePreview.value = e.target.result
-    }
-    reader.readAsDataURL(file)
-  }
-}
+const onProductImgChange = (e) => handleImageFileSelect(e, productImagePreview, selectedImageFile)
+const onPromotionImgChange = (e) => handleImageFileSelect(e, promotionImagePreview, selectedImageFile)
 
-const uploadImageFile = async (file) => {
-  try {
-    const formData = new FormData()
-    formData.append('image', file)
-    
-    // Upload image to server - you may need to adjust this endpoint
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/admin/upload/image`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      },
-      body: formData
-    })
-    
-    if (!response.ok) {
-      throw new Error('Failed to upload image')
-    }
-    
-    const result = await response.json()
-    return result.imageURL || result.url // Adjust based on your API response
-  } catch (error) {
-    console.error('Image upload failed:', error)
-    // Fallback: return data URL for preview
-    return new Promise((resolve) => {
-      const reader = new FileReader()
-      reader.onload = (e) => resolve(e.target.result)
-      reader.readAsDataURL(file)
-    })
+const handleImageFileSelect = (event, previewRef, fileRef) => {
+  const file = event?.target?.files?.[0]
+  if (!file) return
+
+  fileRef.value = file
+
+  const reader = new FileReader()
+  reader.onload = (e) => {
+    previewRef.value = e.target.result
   }
+  reader.readAsDataURL(file)
 }
 
 const resetCategoryForm = () => {
@@ -347,7 +321,6 @@ const resetPromotionForm = () => {
 
 const resetTagForm = () => {
   Object.assign(tagForm, {
-    id: '',
     name: '',
     description: '',
     color: '#3B82F6',
@@ -400,10 +373,18 @@ const editPromotion = (promotion) => {
   editingPromotion.value = promotion
   Object.assign(promotionForm, promotion)
   showPromotionForm.value = true
+  selectedImageFile.value = null
+  promotionImagePreview.value = promotion.imageURL ? `${api}${promotion.imageURL}` : null
 }
 
 const savePromotion = async () => {
   try {
+
+    if (selectedImageFile.value) {
+      const imageURL = await adminApi.updatePromotionImage(editingPromotion.value.id, selectedImageFile.value)
+      promotionForm.imageURL = imageURL
+    }
+
     if (editingPromotion.value) {
       // Update existing promotion
       await adminApi.updatePromotion(editingPromotion.value.id, promotionForm)
@@ -454,7 +435,7 @@ const saveTag = async () => {
       }
     } else {
       // Create new tag
-      const response = await adminApi.createTag(tagForm.id, tagForm)
+      const response = await adminApi.createTag(tagForm)
       if (response.data && response.data.tag) {
         tags.value.push(response.data.tag)
       }
@@ -869,7 +850,7 @@ onMounted(() => {
                     <th
                       class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                     >
-                      Name
+                      Promotion
                     </th>
                     <th
                       class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
@@ -906,8 +887,18 @@ onMounted(() => {
                 <tbody class="bg-white divide-y divide-gray-200">
                   <tr v-for="promotion in promotions" :key="promotion.id">
                     <td class="px-6 py-4 whitespace-nowrap">
-                      <div class="text-sm font-medium text-gray-900">{{ promotion.name }}</div>
-                      <div class="text-sm text-gray-500">{{ promotion.description }}</div>
+                      <div class="flex items-center">
+                        <img
+                          :src="`${api}${promotion.imageURL || '/placeholder-product.jpg'}`"
+                          :alt="promotion.name"
+                          class="h-10 w-10 rounded object-cover"
+                        />
+                        <div class="ml-4">
+                          <div class="text-sm font-medium text-gray-900">{{ promotion.name }}</div>
+                          <div class="text-sm text-gray-500">{{ promotion.description }}</div>
+                        </div>
+                      </div>
+
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {{ promotion.discountValue }}
@@ -1177,7 +1168,7 @@ onMounted(() => {
             <div>
               <label class="block text-sm font-medium text-gray-700">Price</label>
               <input
-                v-model.number="productForm.price"
+                v-model.number="productForm.originalPrice"
                 type="number"
                 min="0"
                 step="0.01"
@@ -1207,15 +1198,15 @@ onMounted(() => {
               <label class="block text-sm font-medium text-gray-700">Product Image</label>
               <div class="mt-1 space-y-3">
                 <!-- Image preview -->
-                <div v-if="imagePreview" class="flex items-center space-x-3">
+                <div v-if="productImagePreview" class="flex items-center space-x-3">
                   <img 
-                    :src="imagePreview" 
+                    :src="productImagePreview" 
                     alt="Product preview"
                     class="h-20 w-20 object-cover rounded border"
                   />
                   <button
                     type="button"
-                    @click="selectedImageFile = null; imagePreview = null"
+                    @click="selectedImageFile.value = null; productImagePreview.value = null"
                     class="text-sm text-red-600 hover:text-red-800"
                   >
                     Remove Image
@@ -1225,12 +1216,12 @@ onMounted(() => {
                 <input
                   type="file"
                   accept="image/*"
-                  @change="handleImageFileSelect"
+                  @change="onProductImgChange"
                   class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                 />
                 <p class="text-xs text-gray-500">Upload an image file (JPG, PNG, etc.)</p>
                 <!-- Fallback URL input -->
-                <div class="mt-2">
+                <!-- <div class="mt-2">
                   <label class="block text-xs text-gray-600 mb-1">Or enter image URL:</label>
                   <input
                     v-model="productForm.imageURL"
@@ -1238,7 +1229,7 @@ onMounted(() => {
                     placeholder="https://example.com/image.jpg"
                     class="block w-full text-sm rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                   />
-                </div>
+                </div> -->
               </div>
             </div>
             <div>
@@ -1377,6 +1368,34 @@ onMounted(() => {
                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               ></textarea>
             </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Promotion Image</label>
+              <div class="mt-1 space-y-3">
+                <!-- Image preview -->
+                <div v-if="promotionImagePreview" class="flex items-center space-x-3">
+                  <img
+                    :src="promotionImagePreview"
+                    alt="Promotion preview"
+                    class="h-20 w-20 object-cover rounded border"
+                  />
+                  <button
+                    type="button"
+                    @click="selectedImageFile.value = null; promotionImagePreview.value = null"
+                    class="text-sm text-red-600 hover:text-red-800"
+                  >
+                    Remove Image
+                  </button>
+                </div>
+                <!-- File input -->
+                <input
+                  type="file"
+                  accept="image/*"
+                  @change="onPromotionImgChange"
+                  class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                />
+                <p class="text-xs text-gray-500">Upload an image file (JPG, PNG, etc.)</p>
+              </div>
+            </div>
             <div class="grid grid-cols-2 gap-4">
               <div>
                 <label class="block text-sm font-medium text-gray-700">Discount Type</label>
@@ -1461,13 +1480,13 @@ onMounted(() => {
             {{ editingTag ? 'Edit Tag' : 'Add New Tag' }}
           </h3>
           <form @submit.prevent="saveTag" class="space-y-4">
-            <div>
+            <!-- <div>
               <label class="block text-sm font-medium text-gray-700">Tag ID *</label>
               <input
                 v-model="tagForm.id"
                 type="text"
                 required
-                :disabled="editingTag !== null"
+                disabled
                 :class="[
                   'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500',
                   editingTag ? 'bg-gray-100' : ''
@@ -1475,7 +1494,7 @@ onMounted(() => {
                 placeholder="e.g., electronics, fashion"
               />
               <p class="mt-1 text-sm text-gray-500">Unique identifier for the tag (cannot be changed after creation)</p>
-            </div>
+            </div> -->
             <div>
               <label class="block text-sm font-medium text-gray-700">Name *</label>
               <input
