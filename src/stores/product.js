@@ -50,13 +50,14 @@ export const useProductStore = defineStore('product', () => {
     try {
       const response = await productApi.getProducts(params)
       products.value = response.data.products || []
+      useMockData.value = false
     } catch (err) {
-      error.value = err.message || 'Failed to fetch products'
       console.warn('API unavailable, using mock data for demo:', err)
 
       // Use mock data when API fails
       products.value = mockProducts
       useMockData.value = true
+      error.value = null // Clear error when using mock data
     } finally {
       isLoading.value = false
     }
