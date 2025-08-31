@@ -77,7 +77,9 @@ export const userApi = {
 
   // Get user profile
   async getProfile() {
-    return apiRequest('/users/me')
+    return apiRequest('/users/me', {
+      method: 'GET',
+    })
   },
 
   // Update user profile

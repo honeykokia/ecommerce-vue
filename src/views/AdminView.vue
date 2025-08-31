@@ -43,8 +43,7 @@ const tabs = [
 // Product form
 const productForm = reactive({
   name: '',
-  originalPrice: 0,
-  finalPrice: 0,
+  price: 0,
   inStock: 0,
   shortDescription: '',
   imageURL: '',
@@ -119,6 +118,7 @@ const loadOrders = async () => {
   try {
     isLoading.value = true
     const response = await adminApi.getOrders()
+    
     if (response.data && response.data.orders) {
       orders.value = response.data.orders
     }
@@ -194,7 +194,6 @@ const updateUserStatus = async (userId, status) => {
 
 const editProduct = (product) => {
   editingProduct.value = product
-  console.log(product)
   Object.assign(productForm, product)
   showProductForm.value = true
   selectedImageFile.value = null
@@ -204,12 +203,12 @@ const editProduct = (product) => {
 const saveProduct = async () => {
   try {
     // Handle image upload if a file was selected
-    if (selectedImageFile.value) {
-      const imageURL = await adminApi.uploadProductImage(editingProduct.value.id, selectedImageFile.value)
-      productForm.imageURL = imageURL
-    }
-    
     if (editingProduct.value) {
+
+      if (selectedImageFile.value) {
+        const ImageResponse = await adminApi.uploadProductImage(editingProduct.value.id, selectedImageFile.value)
+        productForm.imageURL = ImageResponse.data.product.imageURL
+      }
       // Update existing product
       await adminApi.updateProduct(editingProduct.value.id, productForm)
       const index = products.value.findIndex((p) => p.id === editingProduct.value.id)
@@ -219,16 +218,20 @@ const saveProduct = async () => {
     } else {
       // Create new product
       const response = await adminApi.createProduct(productForm)
-      if (response.data && response.data.product) {
-        products.value.push(response.data.product)
+      const createProduct = response.data ? response.data.product : null
+
+      if (selectedImageFile.value) {
+        const ImageResponse = await adminApi.uploadProductImage(createProduct.id, selectedImageFile.value)
+        createProduct.imageURL = ImageResponse.data.product.imageURL
       }
+      products.value.push(createProduct)
     }
     showProductForm.value = false
     resetProductForm()
   } catch (error) {
     console.error('Failed to save product:', error)
   }
-  loadProducts()
+  // loadProducts()
 }
 
 const deleteProduct = async (productId) => {
@@ -269,7 +272,7 @@ const deleteOrder = async (orderId) => {
 const resetProductForm = () => {
   Object.assign(productForm, {
     name: '',
-    price: 0,
+    originalPrice: 0,
     inStock: 0,
     shortDescription: '',
     imageURL: '',
@@ -380,12 +383,12 @@ const editPromotion = (promotion) => {
 const savePromotion = async () => {
   try {
 
-    if (selectedImageFile.value) {
-      const imageURL = await adminApi.updatePromotionImage(editingPromotion.value.id, selectedImageFile.value)
-      promotionForm.imageURL = imageURL
-    }
-
     if (editingPromotion.value) {
+
+      if (selectedImageFile.value) {
+        const ImageResponse = await adminApi.updatePromotionImage(editingPromotion.value.id, selectedImageFile.value)
+        promotionForm.imageURL = ImageResponse.data.promotion.imageURL
+      }
       // Update existing promotion
       await adminApi.updatePromotion(editingPromotion.value.id, promotionForm)
       const index = promotions.value.findIndex((p) => p.id === editingPromotion.value.id)
@@ -395,13 +398,18 @@ const savePromotion = async () => {
     } else {
       // Create new promotion
       const response = await adminApi.createPromotion(promotionForm)
-      if (response.data && response.data.promotion) {
-        promotions.value.push(response.data.promotion)
+      const createdPromotion = response.data ? response.data.promotion : null
+
+      if (selectedImageFile.value) {
+        const ImageResponse = await adminApi.updatePromotionImage(createdPromotion.id, selectedImageFile.value)
+        createdPromotion.imageURL = ImageResponse.data.promotion.imageURL
       }
+
+      promotions.value.push(createdPromotion)
     }
     showPromotionForm.value = false
     resetPromotionForm()
-    loadPromotions()
+    // loadPromotions()
   } catch (error) {
     console.error('Failed to save promotion:', error)
   }
@@ -658,7 +666,7 @@ onMounted(() => {
           <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
             <h2 class="text-lg font-medium text-gray-900">Product Management</h2>
             <button
-              @click="showProductForm = true; editingProduct = null"
+              @click="showProductForm = true; editingProduct = null; resetProductForm()"
               class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
             >
               Add Product
@@ -1086,7 +1094,7 @@ onMounted(() => {
                 <tbody class="bg-white divide-y divide-gray-200">
                   <tr v-for="order in orders" :key="order.id">
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      {{ order.merchant_trade_no }}
+                      {{ order.merchantTradeNo }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       User #{{ order.userId }}

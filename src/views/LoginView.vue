@@ -54,6 +54,7 @@ async function handleSubmit() {
     
     if (response.data.user) {
       // userStore.setUser(response.data.user)
+      userStore.setRole(response.data.user.role)
       userStore.setToken(response.data.user.token)
       router.push('/profile')
     }

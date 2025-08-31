@@ -5,6 +5,7 @@ import { useCartStore } from '@/stores/cart'
 
 const productStore = useProductStore()
 const cartStore = useCartStore()
+const api = import.meta.env.VITE_API_URL
 
 // Get 10 most recently listed products (sorted by ID descending)
 const recentProducts = computed(() => {
@@ -60,13 +61,13 @@ onMounted(async () => {
         class="bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300"
       >
         <img
-          :src="product.imageUrl || product.image"
+          :src="`${api}${product.imageURL || product.image}`"
           :alt="product.name"
           class="w-full h-48 object-cover rounded-t-lg mb-4"
         />
         <h3 class="text-xl font-semibold mb-2">{{ product.name }}</h3>
         <div class="flex items-center justify-between mb-2">
-          <p class="text-gray-600">${{ (product.price / 100).toFixed(2) }}</p>
+          <p class="text-gray-600">${{ product.originalPrice }}</p>
           <div v-if="product.rating" class="flex items-center">
             <span class="text-yellow-500">★</span>
             <span class="text-sm text-gray-600 ml-1">{{ product.rating }}</span>

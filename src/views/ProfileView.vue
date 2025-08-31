@@ -41,7 +41,6 @@ async function loadProfile() {
   isLoading.value = true
   try {
     const response = await userApi.getProfile()
-
     if (response.data && response.data.user) {
       Object.assign(profile, response.data.user)
       originalProfile.value = { ...profile }
