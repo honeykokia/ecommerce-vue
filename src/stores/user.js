@@ -24,6 +24,10 @@ export const useUserStore = defineStore('user', () => {
     localStorage.setItem('token', newToken)
   }
 
+  function setRole(newRole) {
+    role.value = newRole
+  }
+
   function setLoading(loading) {
     isLoading.value = loading
   }
@@ -66,6 +70,7 @@ export const useUserStore = defineStore('user', () => {
     // Actions
     setUser,
     setToken,
+    setRole,
     setLoading,
     setError,
     clearError,

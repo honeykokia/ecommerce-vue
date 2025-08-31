@@ -37,7 +37,6 @@ async function handleSubmit() {
 
   isSubmitting.value = true
   errors.value = {}
-
   try {
     await userApi.forgotPassword({ email: formData.email })
     isSuccess.value = true

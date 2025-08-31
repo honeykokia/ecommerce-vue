@@ -8,7 +8,7 @@ const router = useRouter()
 
 // Form data
 const formData = reactive({
-  password: '',
+  newPassword: '',
   confirmPassword: '',
 })
 
@@ -67,7 +67,7 @@ async function handleSubmit() {
   try {
     await userApi.resetPassword({
       token: token.value,
-      password: formData.password,
+      newPassword: formData.password,
       confirmPassword: formData.confirmPassword,
     })
     isSuccess.value = true
