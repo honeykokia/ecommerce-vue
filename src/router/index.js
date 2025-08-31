@@ -1,5 +1,16 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+import Home from '../components/Home.vue'
+import { useUserStore } from '../stores/user.js'
+
+// Route guard to check authentication
+function requireAuth(to, from, next) {
+  const userStore = useUserStore()
+  if (userStore.isAuthenticated) {
+    next()
+  } else {
+    next('/login')
+  }
+}
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -7,15 +18,109 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: HomeView,
+      component: Home,
     },
     {
-      path: '/about',
-      name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import('../views/AboutView.vue'),
+      path: '/login',
+      name: 'login',
+      component: () => import('../views/LoginView.vue'),
+    },
+    {
+      path: '/register',
+      name: 'register',
+      component: () => import('../views/RegisterView.vue'),
+    },
+    {
+      path: '/forgot-password',
+      name: 'forgot-password',
+      component: () => import('../views/ForgotPasswordView.vue'),
+    },
+    {
+      path: '/reset-password/:token?',
+      name: 'reset-password',
+      component: () => import('../views/ResetPasswordView.vue'),
+    },
+    {
+      path: '/verify-result',
+      name: 'verify-result',
+      component: () => import('../views/VerifyResultView.vue'),
+    },
+    {
+      path: '/email-verify',
+      name: 'email-verify',
+      component: () => import('../views/EmailVerifyView.vue'),
+    },
+    {
+      path: '/profile',
+      name: 'profile',
+      component: () => import('../views/ProfileView.vue'),
+      beforeEnter: requireAuth,
+    },
+    {
+      path: '/profile/avatar',
+      name: 'avatar-edit',
+      component: () => import('../views/AvatarEditView.vue'),
+      beforeEnter: requireAuth,
+    },
+    {
+      path: '/dashboard',
+      name: 'dashboard',
+      component: () => import('../views/DashboardView.vue'),
+      beforeEnter: requireAuth,
+    },
+    {
+      path: '/orders',
+      name: 'orders',
+      component: () => import('../views/OrdersView.vue'),
+      beforeEnter: requireAuth,
+    },
+    {
+      path: '/products',
+      name: 'products',
+      component: () => import('../views/ProductListView.vue'),
+    },
+    {
+      path: '/cart',
+      name: 'cart',
+      component: () => import('../views/CartView.vue'),
+      beforeEnter: requireAuth,
+    },
+    {
+      path: '/payment',
+      name: 'payment',
+      component: () => import('../views/PaymentView.vue'),
+      beforeEnter: requireAuth,
+    },
+    {
+      path: '/payment-result',
+      name: 'payment-result',
+      component: () => import('../views/PaymentResultView.vue'),
+      beforeEnter: requireAuth,
+    },
+    {
+      path: '/admin',
+      name: 'admin',
+      component: () => import('../views/AdminView.vue'),
+      beforeEnter: requireAuth,
+    },
+    {
+      path: '/promotions',
+      name: 'promotions',
+      component: () => import('../views/PromotionView.vue'),
+      beforeEnter: requireAuth,
+    },
+    // Redirect old routes for compatibility
+    {
+      path: '/user/profile',
+      redirect: '/profile',
+    },
+    {
+      path: '/user/dashboard',
+      redirect: '/dashboard',
+    },
+    {
+      path: '/user/orders',
+      redirect: '/orders',
     },
   ],
 })
