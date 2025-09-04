@@ -12,12 +12,12 @@
 > - 伺服器在免費/低配環境，**首次載入可能較慢**（cold start）。  
 
 ### Screenshots
-![Home](./src/docs/home.png)
-![Login](./src/docs/login.png)
-![Product](./src/docs/product.png)
-![Dashboard](./src/docs/dashboard.png)
-![Cart](./src/docs/cart.png)
-![Order](./src/docs/order.png)
+![Home](docs/screenshots/home.png)
+![Login](docs/screenshots/login.png)
+![Product](docs/screenshots/product.png)
+![Dashboard](docs/screenshots/dashboard.png)
+![Cart](docs/screenshots/cart.png)
+![Order](docs/screenshots/order.png)
 
 ---
 ## 🛠 技術架構
@@ -72,6 +72,14 @@ npm run dev
 ### 打包專案
 ```bash
 npm run build
+```
+
+---
+
+## 🔧 環境變數設定
+請在專案根目錄建立 .env 檔案，並設定以下變數：
+```
+VITE_API_URL=https://api.weirong.site
 ```
 
 ---
