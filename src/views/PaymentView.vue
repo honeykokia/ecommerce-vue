@@ -26,8 +26,8 @@ const isSubmitting = ref(false)
 // Payment method options
 const paymentMethods = [
   { value: 'CREDIT', label: '信用卡' },
-  { value: 'PAYPAL', label: 'PayPal' },
-  { value: 'LINE_PAY', label: 'LINE Pay' },
+  // { value: 'PAYPAL', label: 'PayPal' },
+  // { value: 'LINE_PAY', label: 'LINE Pay' },
 ]
 
 // Shipping method options
