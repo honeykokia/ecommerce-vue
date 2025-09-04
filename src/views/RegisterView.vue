@@ -75,6 +75,10 @@ async function handleSubmit() {
       }
 
       // Redirect to login or profile
+<<<<<<< HEAD
+      alert('註冊成功，請至信箱收取驗證信')
+=======
+>>>>>>> origin/main
       router.push('/login')
     }
   } catch (error) {
